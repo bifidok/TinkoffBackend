@@ -1,19 +1,23 @@
 package edu.java.bot.commands;
 
 import com.pengrad.telegrambot.model.Message;
-import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.enums.UserState;
 import edu.java.bot.models.User;
-import edu.java.bot.validators.LinkValidator;
-import java.net.URI;
+import edu.java.bot.services.UserService;
 
 public class TrackCommand implements Command {
     private final static String COMMAND_NAME = "/track";
-    private final static String COMMAND_DESCRIPTION = "start link tracking";
-    private final static String WAIT_FOR_LINK = "Send a link to start tracking it";
-    private final static String LINK_PARSE_ERROR = "Cant parse this link. Try another!";
-    private final static String SUCCESSFUL_ADD_TO_TRACK = "Ok! I will track it";
+
+    private final String commandDescription;
+    private final UserService userService;
+    private final LinkCommandHandler linkCommandHandler;
+
+    public TrackCommand(String description, UserService userService) {
+        commandDescription = description;
+        this.userService = userService;
+        linkCommandHandler = new LinkCommandHandler(userService);
+    }
 
     @Override
     public String name() {
@@ -22,23 +26,15 @@ public class TrackCommand implements Command {
 
     @Override
     public String description() {
-        return COMMAND_DESCRIPTION;
+        return commandDescription;
     }
 
     @Override
-    public SendMessage handle(Update update, User user) {
-        Message message = update.message();
-        if (message.text().equals(name())) {
-            user.setState(UserState.getStateByCommandName(name()));
-            return new SendMessage(update.message().chat().id(), WAIT_FOR_LINK);
+    public SendMessage handle(Message message, long userId) {
+        User user = userService.findByTelegramId(userId);
+        if (user == null) {
+            return new SendMessage(userId, "You are not in database");
         }
-        URI link = URI.create(message.text());
-        if (!LinkValidator.isValid(link)) {
-            return new SendMessage(update.message().chat().id(), LINK_PARSE_ERROR);
-
-        }
-        //TODO update user track list
-        user.resetState();
-        return new SendMessage(update.message().chat().id(), SUCCESSFUL_ADD_TO_TRACK);
+        return linkCommandHandler.handle(message, user, UserState.TRACK);
     }
 }

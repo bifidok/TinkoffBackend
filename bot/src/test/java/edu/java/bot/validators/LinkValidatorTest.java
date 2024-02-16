@@ -7,8 +7,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class LinkValidatorTest {
     @Test
-    @DisplayName("Correct link")
-    public void isValid_shouldReturnTrue(){
+    @DisplayName("Correct link (with https)")
+    public void isValid_whenWithHttps_shouldReturnTrue(){
         URI url = URI.create("https://stackoverflow.com/questions/1642028/what-is-the-operator-in-c");
 
         boolean actual = LinkValidator.isValid(url);
@@ -16,27 +16,18 @@ public class LinkValidatorTest {
         assertThat(actual).isTrue();
     }
     @Test
-    @DisplayName("Not correct link")
-    public void isValid_shouldReturnFalse(){
+    @DisplayName("Correct link (no https)")
+    public void isValid_whenNoHttps_shouldReturnTrue(){
+        URI url = URI.create("stackoverflow.com/questions/1642028/what-is-the-operator-in-c");
+
+        boolean actual = LinkValidator.isValid(url);
+
+        assertThat(actual).isTrue();
+    }
+    @Test
+    @DisplayName("Not correct link (no .com)")
+    public void isValid_whenNoDot_shouldReturnFalse(){
         URI url = URI.create("https://stacom/questions/1642028/what-is-the-operator-in-c");
-
-        boolean actual = LinkValidator.isValid(url);
-
-        assertThat(actual).isFalse();
-    }
-    @Test
-    @DisplayName("Not correct link")
-    public void isValid2_shouldReturnFalse(){
-        URI url = URI.create("https://stackoverflow.com");
-
-        boolean actual = LinkValidator.isValid(url);
-
-        assertThat(actual).isFalse();
-    }
-    @Test
-    @DisplayName("Not correct link")
-    public void isValid3_shouldReturnFalse(){
-        URI url = URI.create("sta.com/questions/1642028/what-is-the-operator-in-c");
 
         boolean actual = LinkValidator.isValid(url);
 

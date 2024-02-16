@@ -1,12 +1,21 @@
 package edu.java.bot.commands;
 
-import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.enums.UserState;
 import edu.java.bot.models.User;
+import edu.java.bot.services.UserService;
 
 public class StartCommand implements Command {
     private final static String COMMAND_NAME = "/start";
-    private final static String COMMAND_DESCRIPTION = "say hello";
+
+    private final String commandDescription;
+    private final UserService userService;
+
+    public StartCommand(String description, UserService userService) {
+        commandDescription = description;
+        this.userService = userService;
+    }
 
     @Override
     public String name() {
@@ -15,12 +24,12 @@ public class StartCommand implements Command {
 
     @Override
     public String description() {
-        return COMMAND_DESCRIPTION;
+        return commandDescription;
     }
 
     @Override
-    public SendMessage handle(Update update, User user) {
-        //TODO send request to db to save new user
-        return new SendMessage(update.message().chat().id(), "Hello!");
+    public SendMessage handle(Message message, long userId) {
+        userService.create(new User(userId, UserState.DEFAULT));
+        return new SendMessage(userId, "Hello!");
     }
 }

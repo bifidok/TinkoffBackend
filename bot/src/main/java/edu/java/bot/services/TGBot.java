@@ -1,97 +1,87 @@
 package edu.java.bot.services;
 
-import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.BotCommand;
+import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.request.BaseRequest;
-import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SetMyCommands;
-import com.pengrad.telegrambot.response.BaseResponse;
 import edu.java.bot.commands.Command;
 import edu.java.bot.commands.CommandManager;
-import edu.java.bot.configurations.ApplicationConfig;
 import edu.java.bot.models.User;
-import edu.java.bot.repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class TGBot implements Bot {
-    private final static Logger LOGGER = LogManager.getLogger();
+    private final CommandManager commandManager;
+    private final TelegramApi api;
+    private final UserService userService;
 
     @Autowired
-    private ApplicationConfig applicationConfig;
-    @Autowired
-    private CommandManager commandManager;
-    //@Autowired
-    private UserRepository userRepository;
-    private TelegramBot bot;
+    public TGBot(CommandManager commandManager, TelegramApi api, UserService userService) {
+        this.commandManager = commandManager;
+        this.api = api;
+        this.userService = userService;
+    }
 
     @Override
     @PostConstruct
     public void start() {
-        bot = new TelegramBot(applicationConfig.telegramToken());
-        setUpdateListener();
+        api.setUpdatesListener(this);
         setCommands(commandManager.getCommands());
     }
 
     @Override
-    public <T extends BaseRequest<T, R>, R extends BaseResponse> void execute(BaseRequest<T, R> request) {
-        bot.execute(request);
-    }
-
-    @Override
     public int process(List<Update> updates) {
-        Update update = updates.get(updates.size() - 1);
-        if (update != null && update.message() != null && !update.message().text().isEmpty()) {
-            User user = userRepository.findUserByTelegramId(update.message().chat().id());
-            Command inputCommand = commandManager.findCommandByName(update.message().text());
+        if (updates == null) {
+            return UpdatesListener.CONFIRMED_UPDATES_ALL;
+        }
+        for (Update update : updates) {
+            if (update == null || update.message() == null || update.message().text().isEmpty()) {
+                continue;
+            }
+            Message message = update.message();
+            Command inputCommand = commandManager.findCommandByName(message.text());
             if (inputCommand != null) {
-                bot.execute(inputCommand.handle(update, user));
+                api.execute(inputCommand.handle(message, message.chat().id()));
             } else {
-                Command lastCommand = commandManager.findCommandByName(user.getState().getCommandName());
-                if (lastCommand != null) {
-                    bot.execute(lastCommand.handle(update, user));
-                } else {
-                    sendMessage(update, "Not recognized command!");
-                }
+                processText(update);
             }
         }
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
-    @Override
-    public void close() {
-        bot.shutdown();
+    private void processText(Update update) {
+        User user = userService.findByTelegramId(update.message().chat().id());
+        if (user == null) {
+            return;
+        }
+        Command lastCommand = commandManager.findCommandByName(user.getState().getCommandName());
+        if (lastCommand != null) {
+            api.execute(lastCommand.handle(update.message(), update.message().chat().id()));
+        } else {
+            api.sendMessage(update, "Not recognized command!");
+        }
     }
 
-    private void sendMessage(Update update, String message) {
-        bot.execute(new SendMessage(update.message().chat().id(), message));
+    @Override
+    public void close() {
+        api.close();
     }
 
     private void setCommands(List<Command> commands) {
         if (commands.isEmpty()) {
+            log.warn("No commands in bot");
+            close();
             return;
         }
         List<BotCommand> botCommands = commands.stream()
             .map(Command::toApiCommand)
             .toList();
-        this.execute(new SetMyCommands(botCommands.toArray(new BotCommand[0])));
-    }
-
-    private void setUpdateListener() {
-        bot.setUpdatesListener(this, e -> {
-            if (e.response() != null) {
-                e.response().errorCode();
-                e.response().description();
-            } else {
-                LOGGER.warn(e.getMessage());
-            }
-        });
+        api.execute(new SetMyCommands(botCommands.toArray(BotCommand[]::new)));
     }
 }

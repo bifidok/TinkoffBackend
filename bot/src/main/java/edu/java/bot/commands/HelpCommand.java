@@ -1,18 +1,19 @@
 package edu.java.bot.commands;
 
-import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.models.User;
+import java.util.Map;
 
 public class HelpCommand implements Command {
     private final static String COMMAND_NAME = "/help";
-    private final static String COMMAND_DESCRIPTION = "shows available commands";
-    private final static String HELP_TEXT = "Bot that monitors changes on websites \n"
-        + "/start - registration\n"
-        + "/help - show available commands \n"
-        + "/list - show the list of trackable links\n"
-        + "/track - start link monitoring\n"
-        + "/untrack - delete link from monitoring";
+
+    private final String commandDescription;
+    private final String helpText;
+
+    public HelpCommand(String description, Map<String, String> commands) {
+        commandDescription = description;
+        helpText = createHelpText(commands);
+    }
 
     @Override
     public String name() {
@@ -21,11 +22,22 @@ public class HelpCommand implements Command {
 
     @Override
     public String description() {
-        return COMMAND_DESCRIPTION;
+        return commandDescription;
     }
 
     @Override
-    public SendMessage handle(Update update, User user) {
-        return new SendMessage(update.message().chat().id(), HELP_TEXT);
+    public SendMessage handle(Message message, long userId) {
+        return new SendMessage(userId, helpText);
+    }
+
+    private String createHelpText(Map<String, String> commands) {
+        StringBuilder builder = new StringBuilder();
+        for (var entry : commands.entrySet()) {
+            builder.append(entry.getKey())
+                .append(" - ")
+                .append(entry.getValue())
+                .append("\n");
+        }
+        return builder.toString();
     }
 }
