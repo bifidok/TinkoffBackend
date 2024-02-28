@@ -1,4 +1,4 @@
-package edu.java.configuration;
+package edu.java.scrapper.configuration;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +14,9 @@ public record ApplicationConfig(
     @NotEmpty
     String gitHubBaseUrl,
     @NotEmpty
-    String stackOverflowBaseUrl
+    String stackOverflowBaseUrl,
+    @NotEmpty
+    String botBaseUrl
 ) {
     public record Scheduler(boolean enable, @NotNull Duration interval) {
     }

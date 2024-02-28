@@ -2,8 +2,7 @@ package edu.java.scrapper.clients;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import edu.java.clients.GitHubClient;
-import edu.java.dto.RepositoryResponse;
+import edu.java.scrapper.dto.RepositoryResponse;
 import java.time.OffsetDateTime;
 import org.junit.Rule;
 import org.junit.Test;

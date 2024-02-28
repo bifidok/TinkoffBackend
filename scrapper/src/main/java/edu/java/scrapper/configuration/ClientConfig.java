@@ -1,7 +1,8 @@
-package edu.java.configuration;
+package edu.java.scrapper.configuration;
 
-import edu.java.clients.GitHubClient;
-import edu.java.clients.StackOverflowClient;
+import edu.java.scrapper.clients.BotClient;
+import edu.java.scrapper.clients.GitHubClient;
+import edu.java.scrapper.clients.StackOverflowClient;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -28,5 +29,15 @@ public class ClientConfig {
         WebClientAdapter adapter = WebClientAdapter.create(webClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(StackOverflowClient.class);
+    }
+
+    @Bean
+    public BotClient botClient(ApplicationConfig applicationConfig) {
+        WebClient webClient = WebClient.builder()
+            .baseUrl(applicationConfig.botBaseUrl())
+            .build();
+        WebClientAdapter adapter = WebClientAdapter.create(webClient);
+        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+        return factory.createClient(BotClient.class);
     }
 }

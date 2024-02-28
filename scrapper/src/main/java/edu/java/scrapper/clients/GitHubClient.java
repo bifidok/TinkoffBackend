@@ -1,6 +1,6 @@
-package edu.java.clients;
+package edu.java.scrapper.clients;
 
-import edu.java.dto.RepositoryResponse;
+import edu.java.scrapper.dto.RepositoryResponse;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.service.annotation.GetExchange;
 
