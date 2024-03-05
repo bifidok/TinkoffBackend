@@ -1,6 +1,6 @@
 app:
-  git-hub-base-url: https://api.github.com/
-  stack-overflow-base-url: https://api.stackexchange.com/2.3/
+  git-hub-base-url: http://localhost:8080/
+  stack-overflow-base-url: http://localhost:8080/
   bot-base-url: http://localhost:8090/
   scheduler:
     enable: false
@@ -13,9 +13,6 @@ spring:
   application:
     name: scrapper
 
-springdoc:
-  api-docs:
-    path: /swagger-ui
 server:
   port: 8080
 
