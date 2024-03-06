@@ -20,7 +20,7 @@ public class LinkService {
     }
 
     public void add(Link link) {
-        Link sameLink = getByURI(link.getLink());
+        Link sameLink = getByURI(link.getUrl());
         if (sameLink != null) {
             throw new LinkDoubleCreationException();
         }
@@ -34,7 +34,7 @@ public class LinkService {
         if (link == null) {
             throw new LinkNotCorrectException("not correct link");
         }
-        Link sameLink = getByURI(link.getLink());
+        Link sameLink = getByURI(link.getUrl());
         if (sameLink == null) {
             throw new LinkNotFoundException("link dont exist");
         }
@@ -43,7 +43,7 @@ public class LinkService {
 
     private Link getByURI(URI uri) {
         for (var entry : database.entrySet()) {
-            if (entry.getValue().getLink().equals(uri)) {
+            if (entry.getValue().getUrl().equals(uri)) {
                 return entry.getValue();
             }
         }

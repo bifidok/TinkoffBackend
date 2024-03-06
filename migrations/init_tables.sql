@@ -1,4 +1,4 @@
-CREATE TYPE state AS ENUM ('track','untrack');
+CREATE TYPE state AS ENUM ('TRACK','UNTRACK','');
 create table if not exists Chats
 (
     id     bigint primary key,

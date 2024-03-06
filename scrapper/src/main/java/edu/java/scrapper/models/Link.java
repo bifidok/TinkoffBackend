@@ -1,15 +1,28 @@
 package edu.java.scrapper.models;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 import lombok.Data;
-import lombok.NonNull;
 
 @Data
 public class Link {
     private int id;
-    @NonNull
-    private URI link;
+    private URI url;
+    private List<Chat> chats;
+
+    public Link() {
+
+    }
+
+    public Link(URI link) {
+        this.url = link;
+    }
+
+    public Link(int id, URI link) {
+        this.id = id;
+        this.url = link;
+    }
 
     @Override public boolean equals(Object o) {
         if (this == o) {
@@ -19,11 +32,11 @@ public class Link {
             return false;
         }
         Link anotherLink = (Link) o;
-        return Objects.equals(this.link, anotherLink.link);
+        return Objects.equals(this.url, anotherLink.url);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(link);
+        return Objects.hash(url);
     }
 }

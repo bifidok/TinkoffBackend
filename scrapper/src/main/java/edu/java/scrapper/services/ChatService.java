@@ -2,7 +2,7 @@ package edu.java.scrapper.services;
 
 import edu.java.scrapper.exceptions.ChatNotCreatedException;
 import edu.java.scrapper.exceptions.ChatNotFoundException;
-import edu.java.scrapper.models.TelegramChat;
+import edu.java.scrapper.models.Chat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,13 +12,13 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class ChatService {
-    private final Map<Integer, TelegramChat> database;
+    private final Map<Integer, Chat> database;
 
     public ChatService() {
         database = new HashMap<>();
     }
 
-    public TelegramChat findById(int id) {
+    public Chat findById(int id) {
         return database.get(id);
     }
 
@@ -28,18 +28,18 @@ public class ChatService {
             log.info(message);
             throw new ChatNotCreatedException(message);
         }
-        TelegramChat telegramChat = new TelegramChat(id, new ArrayList<>());
-        database.put(telegramChat.getId(), telegramChat);
+        Chat chat = new Chat(id, new ArrayList<>());
+        database.put(chat.getId(), chat);
     }
 
     public void delete(int id) {
-        TelegramChat telegramChat = findById(id);
-        if (telegramChat == null) {
+        Chat chat = findById(id);
+        if (chat == null) {
             String message = id + " chat not exist";
             log.info(message);
             throw new ChatNotFoundException(message);
         }
-        database.remove(telegramChat.getId());
+        database.remove(chat.getId());
     }
 
 }

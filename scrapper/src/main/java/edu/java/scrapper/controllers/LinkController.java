@@ -6,7 +6,7 @@ import edu.java.scrapper.dto.ListLinksResponse;
 import edu.java.scrapper.dto.RemoveLinkRequest;
 import edu.java.scrapper.exceptions.ChatNotFoundException;
 import edu.java.scrapper.models.Link;
-import edu.java.scrapper.models.TelegramChat;
+import edu.java.scrapper.models.Chat;
 import edu.java.scrapper.services.ChatService;
 import edu.java.scrapper.services.LinkService;
 import java.util.List;
@@ -34,38 +34,38 @@ public class LinkController {
 
     @GetMapping("/{id}")
     public ListLinksResponse getAll(@PathVariable("id") int tgChatId) {
-        TelegramChat telegramChat = chatService.findById(tgChatId);
-        if (telegramChat == null) {
+        Chat chat = chatService.findById(tgChatId);
+        if (chat == null) {
             throw new ChatNotFoundException();
         }
-        List<Link> links = telegramChat.getLinks();
+        List<Link> links = chat.getLinks();
         List<LinkResponse> listLinksResponse = links.stream()
-            .map(link -> new LinkResponse(link.getId(), link.getLink()))
+            .map(link -> new LinkResponse(link.getId(), link.getUrl()))
             .toList();
         return new ListLinksResponse(listLinksResponse, listLinksResponse.size());
     }
 
     @PostMapping("/{id}")
     public HttpStatus addLink(@PathVariable("id") int tgChatId, @RequestBody AddLinkRequest addLinkRequest) {
-        TelegramChat telegramChat = chatService.findById(tgChatId);
-        if (telegramChat == null) {
+        Chat chat = chatService.findById(tgChatId);
+        if (chat == null) {
             throw new ChatNotFoundException();
         }
         Link link = new Link(addLinkRequest.getLink());
         linkService.add(link);
-        telegramChat.getLinks().add(link);
+        chat.getLinks().add(link);
         return HttpStatus.OK;
     }
 
     @DeleteMapping("/{id}")
     public HttpStatus removeLink(@PathVariable("id") int tgChatId, @RequestBody RemoveLinkRequest removeLinkRequest) {
-        TelegramChat telegramChat = chatService.findById(tgChatId);
-        if (telegramChat == null) {
+        Chat chat = chatService.findById(tgChatId);
+        if (chat == null) {
             throw new ChatNotFoundException();
         }
         Link link = new Link(removeLinkRequest.getLink());
         linkService.remove(link);
-        telegramChat.getLinks().remove(link);
+        chat.getLinks().remove(link);
         return HttpStatus.OK;
     }
 }
