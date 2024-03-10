@@ -1,7 +1,6 @@
 package edu.java.scrapper.models;
 
 import java.net.URI;
-import java.util.Objects;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
