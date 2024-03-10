@@ -3,8 +3,8 @@ package edu.java.scrapper;
 import edu.java.scrapper.dto.ApiErrorResponse;
 import edu.java.scrapper.exceptions.ChatNotCreatedException;
 import edu.java.scrapper.exceptions.ChatNotFoundException;
-import edu.java.scrapper.exceptions.LinkDoubleCreationException;
 import edu.java.scrapper.exceptions.LinkNotCorrectException;
+import edu.java.scrapper.exceptions.LinkNotCreatedException;
 import edu.java.scrapper.exceptions.LinkNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -91,8 +91,8 @@ public class ExceptionApiHandler {
             .body(apiErrorResponse);
     }
 
-    @ExceptionHandler(LinkDoubleCreationException.class)
-    public ResponseEntity<ApiErrorResponse> linkDoubleCreationException(LinkDoubleCreationException exception) {
+    @ExceptionHandler(LinkNotCreatedException.class)
+    public ResponseEntity<ApiErrorResponse> linkDoubleCreationException(LinkNotCreatedException exception) {
         log.warn(exception.getMessage());
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse(
             "link already exist",

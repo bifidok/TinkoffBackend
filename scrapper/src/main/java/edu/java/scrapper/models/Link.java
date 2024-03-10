@@ -1,14 +1,19 @@
 package edu.java.scrapper.models;
 
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Objects;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 public class Link {
+    @EqualsAndHashCode.Exclude
     private int id;
     private URI url;
+    @EqualsAndHashCode.Exclude
+    private OffsetDateTime lastActivity;
+    @EqualsAndHashCode.Exclude
     private List<Chat> chats;
 
     public Link() {
@@ -17,26 +22,12 @@ public class Link {
 
     public Link(URI link) {
         this.url = link;
+        lastActivity = OffsetDateTime.now();
     }
 
-    public Link(int id, URI link) {
-        this.id = id;
-        this.url = link;
+    public Link(URI url, OffsetDateTime lastActivity) {
+        this.url = url;
+        this.lastActivity = lastActivity;
     }
 
-    @Override public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Link anotherLink = (Link) o;
-        return Objects.equals(this.url, anotherLink.url);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(url);
-    }
 }

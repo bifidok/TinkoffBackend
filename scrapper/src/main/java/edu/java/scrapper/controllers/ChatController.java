@@ -20,14 +20,14 @@ public class ChatController {
     }
 
     @PostMapping("/{id}")
-    public HttpStatus register(@PathVariable int id) {
-        chatService.create(id);
+    public HttpStatus register(@PathVariable("id") long tgChatId) {
+        chatService.register(tgChatId);
         return HttpStatus.OK;
     }
 
     @DeleteMapping("/{id}")
-    public HttpStatus delete(@PathVariable int id) {
-        chatService.delete(id);
+    public HttpStatus delete(@PathVariable("id") long tgChatId) {
+        chatService.unregister(tgChatId);
         return HttpStatus.OK;
     }
 }

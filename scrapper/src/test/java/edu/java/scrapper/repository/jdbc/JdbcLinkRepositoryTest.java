@@ -4,21 +4,19 @@ import edu.java.scrapper.IntegrationTest;
 import edu.java.scrapper.ScrapperApplication;
 import edu.java.scrapper.models.Link;
 import java.net.URI;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(classes = ScrapperApplication.class)
+@ActiveProfiles("test")
 public class JdbcLinkRepositoryTest extends IntegrationTest {
     @Autowired
     private JdbcLinkRepository jdbcLinkRepository;
@@ -27,21 +25,13 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void findAll_shouldReturnLinks() {
-        List<Link> expected = null;
-        try (Connection connection = POSTGRES.createConnection("")) {
-            PreparedStatement statement = connection.prepareStatement("select * from links");
-
-            ResultSet resultSet = statement.executeQuery();
-            expected = new ArrayList<>();
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                URI uri = URI.create(resultSet.getString("url"));
-                Link link = new Link(id, uri);
-                expected.add(link);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        Link link1 = new Link(URI.create("https://localhost:8080/1"), OffsetDateTime.now());
+        Link link2 = new Link(URI.create("https://localhost:8080/2"), OffsetDateTime.now());
+        Link link3 = new Link(URI.create("https://localhost:8080/3"), OffsetDateTime.now());
+        List<Link> expected = List.of(link1, link2, link3);
+        jdbcLinkRepository.add(link1);
+        jdbcLinkRepository.add(link2);
+        jdbcLinkRepository.add(link3);
 
         List<Link> actual = jdbcLinkRepository.findAll();
 
@@ -49,12 +39,27 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         assertThat(actual).isNotNull();
         Assertions.assertEquals(expected, actual);
     }
+    @Test
+    @Transactional
+    @Rollback
+    public void findByUrl_shouldReturnLink() {
+        Link link1 = new Link(URI.create("https://localhost:8080/1"), OffsetDateTime.now());
+        Link link2 = new Link(URI.create("https://localhost:8080/2"), OffsetDateTime.now());
+        Link link3 = new Link(URI.create("https://localhost:8080/3"), OffsetDateTime.now());
+        jdbcLinkRepository.add(link1);
+        jdbcLinkRepository.add(link2);
+        jdbcLinkRepository.add(link3);
+
+        Link actual = jdbcLinkRepository.findByUrl(link2.getUrl());
+
+        Assertions.assertEquals(link2, actual);
+    }
 
     @Test
     @Transactional
     @Rollback
     public void add_shouldAddLink() {
-        Link link = new Link(1, URI.create("https://localhost:8080"));
+        Link link = new Link(URI.create("https://localhost:8080"), OffsetDateTime.now());
 
         jdbcLinkRepository.add(link);
         List<Link> links = jdbcLinkRepository.findAll();
@@ -65,11 +70,24 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     @Test
     @Transactional
     @Rollback
-    public void remove_shouldRemoveLink() {
-        Link link = new Link(1, URI.create("https://localhost:8080"));
+    public void removeByUrl_shouldRemoveLink() {
+        Link link = new Link(URI.create("https://localhost:8080"), OffsetDateTime.now());
         jdbcLinkRepository.add(link);
 
-        jdbcLinkRepository.remove(link);
+        jdbcLinkRepository.remove(link.getUrl());
+        List<Link> links = jdbcLinkRepository.findAll();
+
+        assertThat(links.contains(link)).isFalse();
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void removeById_shouldRemoveLink() {
+        Link link = new Link(URI.create("https://localhost:8080"), OffsetDateTime.now());
+
+        System.out.println(link.getId());
+        jdbcLinkRepository.remove(link.getUrl());
         List<Link> links = jdbcLinkRepository.findAll();
 
         assertThat(links.contains(link)).isFalse();

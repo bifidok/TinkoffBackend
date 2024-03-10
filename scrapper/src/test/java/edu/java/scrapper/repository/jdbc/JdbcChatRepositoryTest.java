@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
@@ -18,11 +19,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(classes = ScrapperApplication.class)
+@ActiveProfiles("test")
 public class JdbcChatRepositoryTest extends IntegrationTest {
     @Autowired
     private JdbcChatRepository jdbcChatRepository;
@@ -31,21 +34,14 @@ public class JdbcChatRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void findAll_shouldReturnChats() {
-        List<Chat> expected = null;
-        try (Connection connection = POSTGRES.createConnection("")) {
-            PreparedStatement statement = connection.prepareStatement("select * from chats");
-
-            ResultSet resultSet = statement.executeQuery();
-            expected = new ArrayList<>();
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                ChatState status = ChatState.valueOf(resultSet.getString("status"));
-                Chat chat = new Chat(id,status);
-                expected.add(chat);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        Chat chat1 = new Chat(1);
+        System.out.println(chat1.getStatus().toString());
+        Chat chat2 = new Chat(2);
+        Chat chat3 = new Chat(3);
+        List<Chat> expected = List.of(chat1,chat2,chat3);
+        jdbcChatRepository.add(chat1);
+        jdbcChatRepository.add(chat2);
+        jdbcChatRepository.add(chat3);
 
         List<Chat> actual = jdbcChatRepository.findAll();
 
@@ -53,12 +49,22 @@ public class JdbcChatRepositoryTest extends IntegrationTest {
         assertThat(actual).isNotNull();
         Assertions.assertEquals(expected, actual);
     }
+    @Test
+    @Transactional
+    @Rollback
+    public void findById_shouldReturnChatById() {
+        Chat chat1 = new Chat(1);
+        jdbcChatRepository.add(chat1);
 
+        Chat actual = jdbcChatRepository.findById(chat1.getId());
+
+        assertThat(actual.equals(chat1)).isTrue();
+    }
     @Test
     @Transactional
     @Rollback
     public void add_shouldAddChat() {
-        Chat chat = new Chat(2,ChatState.TRACK);
+        Chat chat = new Chat(2);
 
         jdbcChatRepository.add(chat);
         List<Chat> list = jdbcChatRepository.findAll();
@@ -70,7 +76,7 @@ public class JdbcChatRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void remove_shouldRemoveChat() {
-        Chat chat = new Chat(2,ChatState.TRACK);
+        Chat chat = new Chat(2);
         jdbcChatRepository.add(chat);
 
         jdbcChatRepository.remove(chat);

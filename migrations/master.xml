@@ -8,7 +8,7 @@
        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet id="tag" author="me">
-        <tagDatabase tag="tag1"/>
+        <tagDatabase tag="v1"/>
     </changeSet>
 
     <changeSet id="init_tables" author="me">

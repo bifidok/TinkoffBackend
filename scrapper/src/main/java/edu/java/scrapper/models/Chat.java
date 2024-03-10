@@ -2,25 +2,28 @@ package edu.java.scrapper.models;
 
 import java.util.List;
 import lombok.Data;
-import lombok.NonNull;
+import lombok.EqualsAndHashCode;
 
 @Data
 public class Chat {
-    private int id;
+    private long id;
+    @EqualsAndHashCode.Exclude
     private ChatState status;
+    @EqualsAndHashCode.Exclude
     private List<Link> links;
-    public Chat(){
+
+    public Chat() {
 
     }
-    public Chat(ChatState status){
-        this.status = status;
-    }
-    public Chat(int id, ChatState status){
+
+    public Chat(long id) {
         this.id = id;
-        this.status = status;
+        this.status = ChatState.DEFAULT;
     }
-    public Chat(int id, List<Link> list){
+
+    public Chat(long id, ChatState state) {
         this.id = id;
-        this.links = list;
+        this.status = state;
     }
+
 }
