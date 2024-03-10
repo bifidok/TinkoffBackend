@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,8 +33,8 @@ public class LinkController {
         this.chatService = chatService;
     }
 
-    @GetMapping("/{id}")
-    public ListLinksResponse getAll(@PathVariable("id") int tgChatId) {
+    @GetMapping
+    public ListLinksResponse getAll(@RequestHeader int tgChatId) {
         TelegramChat telegramChat = chatService.findById(tgChatId);
         if (telegramChat == null) {
             throw new ChatNotFoundException();
@@ -45,8 +46,8 @@ public class LinkController {
         return new ListLinksResponse(listLinksResponse, listLinksResponse.size());
     }
 
-    @PostMapping("/{id}")
-    public HttpStatus addLink(@PathVariable("id") int tgChatId, @RequestBody AddLinkRequest addLinkRequest) {
+    @PostMapping
+    public HttpStatus addLink(@RequestHeader int tgChatId, @RequestBody AddLinkRequest addLinkRequest) {
         TelegramChat telegramChat = chatService.findById(tgChatId);
         if (telegramChat == null) {
             throw new ChatNotFoundException();
@@ -57,8 +58,8 @@ public class LinkController {
         return HttpStatus.OK;
     }
 
-    @DeleteMapping("/{id}")
-    public HttpStatus removeLink(@PathVariable("id") int tgChatId, @RequestBody RemoveLinkRequest removeLinkRequest) {
+    @DeleteMapping
+    public HttpStatus removeLink(@RequestHeader int tgChatId, @RequestBody RemoveLinkRequest removeLinkRequest) {
         TelegramChat telegramChat = chatService.findById(tgChatId);
         if (telegramChat == null) {
             throw new ChatNotFoundException();

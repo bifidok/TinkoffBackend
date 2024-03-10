@@ -3,11 +3,12 @@ package edu.java.bot.configurations;
 import edu.java.bot.clients.ScrapperClient;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
-@ConfigurationProperties
+@Configuration
 public class ClientConfig {
     @Bean
     public ScrapperClient scrapperClient(ApplicationConfig applicationConfig) {

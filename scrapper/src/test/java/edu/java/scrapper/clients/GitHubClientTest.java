@@ -1,49 +1,63 @@
 package edu.java.scrapper.clients;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import edu.java.scrapper.dto.RepositoryResponse;
 import java.time.OffsetDateTime;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import edu.java.scrapper.ScrapperApplication;
+import edu.java.scrapper.dto.RepositoryResponse;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = ScrapperApplication.class)
 @ActiveProfiles("test")
 public class GitHubClientTest {
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule();
+    private final static WireMockServer wireMockServer = new WireMockServer();
+
     @Autowired
     private GitHubClient gitHubClient;
 
+    @BeforeAll
+    public static void setUp() {
+        wireMockServer.start();
+    }
+
+    @AfterAll
+    public static void tearDown() {
+        wireMockServer.stop();
+    }
+
     @Test
     public void get() {
-        configure(0, OffsetDateTime.MAX);
+        int id = 0;
+        OffsetDateTime dateTime = OffsetDateTime.MAX;
+        setUpServer("/repos/owner/repo", createBody(id, dateTime));
 
         RepositoryResponse response = gitHubClient.get("owner", "repo");
 
-        assertThat(response.id()).isEqualTo(0);
-        assertThat(response.lastActivity()).isEqualTo(OffsetDateTime.MAX.toString());
+        assertThat(response.id()).isEqualTo(id);
+        assertThat(response.lastActivity()).isEqualTo(dateTime.toString());
     }
 
-    private void configure(int id, OffsetDateTime lastActvity) {
+    private String createBody(int id, OffsetDateTime lastActvity) {
         String body = String.format("{\"id\":%d,\"updated_at\":\"%s\"}", id, lastActvity.toString());
+        return body;
+    }
+
+    private void setUpServer(String url, String body) {
         configureFor("localhost", 8080);
-        stubFor(WireMock.get(urlEqualTo("/repos/owner/repo"))
-            .willReturn(aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader("Content-Type", "application/json")
-                .withBody(body)));
+        wireMockServer.stubFor(
+            WireMock.get(urlEqualTo(url))
+                .willReturn(aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(body)));
     }
 }

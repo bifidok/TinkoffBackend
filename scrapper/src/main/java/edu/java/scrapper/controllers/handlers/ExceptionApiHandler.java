@@ -1,4 +1,4 @@
-package edu.java.scrapper;
+package edu.java.scrapper.controllers.handlers;
 
 import edu.java.scrapper.dto.ApiErrorResponse;
 import edu.java.scrapper.exceptions.ChatNotCreatedException;
