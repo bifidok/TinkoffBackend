@@ -1,4 +1,4 @@
-package edu.java.scrapper;
+package edu.java.scrapper.controllers.handlers;
 
 import edu.java.scrapper.dto.ApiErrorResponse;
 import edu.java.scrapper.exceptions.ChatNotCreatedException;
@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import java.util.Arrays;
 
 @RestControllerAdvice
 @Slf4j
@@ -24,7 +25,7 @@ public class ExceptionApiHandler {
             HttpStatus.BAD_REQUEST.toString(),
             exception.getClass().getName(),
             exception.getMessage(),
-            exception.getStackTrace()
+            Arrays.stream(exception.getStackTrace()).map(trace -> trace.toString()).toArray(String[]::new)
         );
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
@@ -39,7 +40,7 @@ public class ExceptionApiHandler {
             HttpStatus.BAD_REQUEST.toString(),
             exception.getClass().getName(),
             exception.getMessage(),
-            exception.getStackTrace()
+            Arrays.stream(exception.getStackTrace()).map(trace -> trace.toString()).toArray(String[]::new)
         );
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
@@ -54,7 +55,7 @@ public class ExceptionApiHandler {
             HttpStatus.NOT_FOUND.toString(),
             exception.getClass().getName(),
             exception.getMessage(),
-            exception.getStackTrace()
+            Arrays.stream(exception.getStackTrace()).map(trace -> trace.toString()).toArray(String[]::new)
         );
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
@@ -69,7 +70,7 @@ public class ExceptionApiHandler {
             HttpStatus.NOT_FOUND.toString(),
             exception.getClass().getName(),
             exception.getMessage(),
-            exception.getStackTrace()
+            Arrays.stream(exception.getStackTrace()).map(trace -> trace.toString()).toArray(String[]::new)
         );
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
@@ -84,7 +85,7 @@ public class ExceptionApiHandler {
             HttpStatus.BAD_REQUEST.toString(),
             exception.getClass().getName(),
             exception.getMessage(),
-            exception.getStackTrace()
+            Arrays.stream(exception.getStackTrace()).map(trace -> trace.toString()).toArray(String[]::new)
         );
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
@@ -99,7 +100,7 @@ public class ExceptionApiHandler {
             HttpStatus.BAD_REQUEST.toString(),
             exception.getClass().getName(),
             exception.getMessage(),
-            exception.getStackTrace()
+            Arrays.stream(exception.getStackTrace()).map(trace -> trace.toString()).toArray(String[]::new)
         );
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)

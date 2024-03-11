@@ -14,5 +14,5 @@ public class ApiErrorResponse {
     @NonNull
     private final String exceptionMessage;
     @NonNull
-    private final StackTraceElement[] stackTrace;
+    private final String[] stackTrace;
 }
