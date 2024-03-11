@@ -1,7 +1,6 @@
 package edu.java.bot.services;
 
 import com.pengrad.telegrambot.UpdatesListener;
-import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import edu.java.bot.commands.CommandManager;
 import edu.java.bot.commands.ListCommand;
@@ -18,8 +17,6 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.stereotype.Component;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;

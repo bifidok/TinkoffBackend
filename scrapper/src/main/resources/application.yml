@@ -1,7 +1,7 @@
 app:
   git-hub-base-url: https://api.github.com/
   stack-overflow-base-url: https://api.stackexchange.com/2.3/
-  bot-base-url: http://localhost:8090/
+  bot-base-url: http://localhost:8080/
   scheduler:
     enable: false
     interval: 10s
