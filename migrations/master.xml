@@ -7,12 +7,12 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    <changeSet id="tag" author="me">
-        <tagDatabase tag="v1"/>
+    <changeSet id="tag2" author="me">
+        <tagDatabase tag="v2"/>
     </changeSet>
 
-    <changeSet id="init_tables" author="me">
-        <sqlFile path="init_tables.sql" relativeToChangelogFile="true"/>
+    <changeSet id="init_tables_v2" author="me">
+        <sqlFile path="init_tables_v2.sql" relativeToChangelogFile="true"/>
         <rollback>
             <sqlFile path="drop_tables.sql" relativeToChangelogFile="true"/>
         </rollback>

@@ -6,6 +6,7 @@ import edu.java.scrapper.dto.ListLinksResponse;
 import edu.java.scrapper.dto.RemoveLinkRequest;
 import edu.java.scrapper.models.Link;
 import edu.java.scrapper.services.LinkService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,13 +38,16 @@ public class LinkController {
     }
 
     @PostMapping
-    public HttpStatus addLink(@RequestHeader long tgChatId, @RequestBody AddLinkRequest addLinkRequest) {
+    public HttpStatus addLink(@RequestHeader long tgChatId, @RequestBody @Valid AddLinkRequest addLinkRequest) {
         linkService.add(tgChatId, addLinkRequest.getLink());
         return HttpStatus.OK;
     }
 
     @DeleteMapping
-    public HttpStatus removeLink(@RequestHeader long tgChatId, @RequestBody RemoveLinkRequest removeLinkRequest) {
+    public HttpStatus removeLink(
+        @RequestHeader long tgChatId,
+        @RequestBody @Valid RemoveLinkRequest removeLinkRequest
+    ) {
         linkService.remove(tgChatId, removeLinkRequest.getLink());
         return HttpStatus.OK;
     }

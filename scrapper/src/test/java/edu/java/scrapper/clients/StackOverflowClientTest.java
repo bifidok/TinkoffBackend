@@ -5,7 +5,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import edu.java.scrapper.ScrapperApplication;
-import edu.java.scrapper.dto.QuestionResponse;
+import edu.java.scrapper.clients.responses.QuestionResponse;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

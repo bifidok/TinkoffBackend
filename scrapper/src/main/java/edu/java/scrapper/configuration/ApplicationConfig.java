@@ -16,7 +16,8 @@ public record ApplicationConfig(
     @NotEmpty
     String stackOverflowBaseUrl,
     @NotEmpty
-    String botBaseUrl
+    String botBaseUrl,
+    int linkCheckDelayInHours
 ) {
     public record Scheduler(boolean enable, @NotNull Duration interval) {
     }

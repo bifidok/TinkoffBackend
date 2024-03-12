@@ -47,6 +47,11 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Override
+    public List<Link> findByCheckDateMoreThan(OffsetDateTime dateTime) {
+        return linkRepository.findByCheckDateMoreThan(dateTime);
+    }
+
+    @Override
     public void add(long tgChatId, URI url) {
         Chat chat = chatRepository.findById(tgChatId);
         if (chat == null) {
@@ -63,6 +68,11 @@ public class JdbcLinkService implements LinkService {
             link = linkRepository.findByUrl(url);
         }
         chatLinkRepository.add(chat, link);
+    }
+
+    @Override
+    public void update(Link link) {
+        linkRepository.update(link);
     }
 
     @Override

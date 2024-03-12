@@ -13,8 +13,6 @@
     <version>${revision}</version>
 
     <dependencies>
-
-
         <!-- Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

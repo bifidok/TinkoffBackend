@@ -1,8 +1,10 @@
 package edu.java.bot.controllers;
 
 import edu.java.bot.dto.LinkUpdateRequest;
-import edu.java.bot.exceptions.LinkUpdateNotCorrectException;
+import edu.java.bot.services.TGBot;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,12 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/updates")
 @Slf4j
 public class UpdateController {
+    private final TGBot tgBot;
+
+    @Autowired
+    public UpdateController(TGBot tgBot) {
+        this.tgBot = tgBot;
+    }
 
     @PostMapping
-    public HttpStatus checkUpdate(@RequestBody LinkUpdateRequest linkUpdate) {
-        if (linkUpdate == null || linkUpdate.getDescription() == null) {
-            throw new LinkUpdateNotCorrectException("linkUpdate not correct");
-        }
+    public HttpStatus checkUpdate(@RequestBody @Valid LinkUpdateRequest linkUpdate) {
+        tgBot.updateRequest(linkUpdate);
         return HttpStatus.OK;
     }
 }

@@ -3,6 +3,7 @@ package edu.java.scrapper.repository.jdbc;
 import edu.java.scrapper.models.Link;
 import edu.java.scrapper.repository.LinkRepository;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,13 @@ public class JdbcLinkRepository implements LinkRepository {
 
     @Override
     @Transactional(readOnly = true)
+    public List<Link> findByCheckDateMoreThan(OffsetDateTime dateTime) {
+        String query = String.format("select * from links where last_check_time < '%s'", dateTime.toString());
+        return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(Link.class));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Link findByUrl(URI url) {
         String query = String.format("select * from links where url = '%s'", url.toString());
         try {
@@ -44,9 +52,21 @@ public class JdbcLinkRepository implements LinkRepository {
     @Transactional
     public void add(Link link) {
         jdbcTemplate.update(
-            "insert into links(url, last_activity) values(?, ?)",
+            "insert into links(url, last_activity,last_check_time) values(?, ?, ?)",
             link.getUrl().toString(),
-            link.getLastActivity()
+            link.getLastActivity(),
+            link.getLastCheckTime()
+        );
+    }
+
+    @Override
+    @Transactional
+    public void update(Link link) {
+        jdbcTemplate.update(
+            "update links set last_check_time = ?, last_activity = ? where id = ?",
+            link.getLastCheckTime(),
+            link.getLastActivity(),
+            link.getId()
         );
     }
 

@@ -6,12 +6,12 @@ import edu.java.scrapper.exceptions.ChatNotFoundException;
 import edu.java.scrapper.exceptions.LinkNotCorrectException;
 import edu.java.scrapper.exceptions.LinkNotCreatedException;
 import edu.java.scrapper.exceptions.LinkNotFoundException;
+import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import java.util.Arrays;
 
 @RestControllerAdvice
 @Slf4j

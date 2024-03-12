@@ -14,6 +14,8 @@ public class Link {
     @EqualsAndHashCode.Exclude
     private OffsetDateTime lastActivity;
     @EqualsAndHashCode.Exclude
+    private OffsetDateTime lastCheckTime;
+    @EqualsAndHashCode.Exclude
     private List<Chat> chats;
 
     public Link() {
@@ -23,11 +25,13 @@ public class Link {
     public Link(URI link) {
         this.url = link;
         lastActivity = OffsetDateTime.now();
+        lastCheckTime = OffsetDateTime.now();
     }
 
     public Link(URI url, OffsetDateTime lastActivity) {
         this.url = url;
         this.lastActivity = lastActivity;
+        lastCheckTime = OffsetDateTime.now();
     }
 
 }

@@ -1,13 +1,14 @@
 package edu.java.scrapper.dto;
 
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NonNull;
 
 @Data
+@AllArgsConstructor
 public class ListLinksResponse {
-    @NonNull
+    @NotNull
     private List<LinkResponse> links;
-    @NonNull
     private int size;
 }

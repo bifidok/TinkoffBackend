@@ -34,7 +34,7 @@ public class JdbcChatLinkRepository implements ChatLinkRepository {
     @Transactional(readOnly = true)
     @SuppressWarnings("MultipleStringLiterals")
     public List<Link> findLinksByChat(Chat chat) {
-        String query = String.format("select l.id, l.url, l.last_activity from links l "
+        String query = String.format("select l.id, l.url, l.last_activity, l.last_check_time from links l "
             + "join chats_links cl on l.id = cl.link_id "
             + "join chats c on c.id = cl.chat_id "
             + "where cl.chat_id = %d", chat.getId());

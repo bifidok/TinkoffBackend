@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import java.time.OffsetDateTime;
 import edu.java.scrapper.ScrapperApplication;
-import edu.java.scrapper.dto.RepositoryResponse;
+import edu.java.scrapper.clients.responses.RepositoryResponse;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
