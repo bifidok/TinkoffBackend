@@ -16,7 +16,6 @@ import edu.java.scrapper.models.Link;
 import edu.java.scrapper.services.ChatService;
 import edu.java.scrapper.services.LinkService;
 import edu.java.scrapper.services.LinkUpdater;
-import jakarta.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
