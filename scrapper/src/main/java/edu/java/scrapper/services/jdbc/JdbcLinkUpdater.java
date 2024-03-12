@@ -72,7 +72,7 @@ public class JdbcLinkUpdater implements LinkUpdater {
         }
     }
 
-    private void sendRequestToUpdate(@Nullable ApiBaseResponse apiBaseResponse, Link link) {
+    private void sendRequestToUpdate(ApiBaseResponse apiBaseResponse, Link link) {
         if (link.getLastActivity().isBefore(apiBaseResponse.getLastActivity())) {
             List<Chat> chats = chatService.findAll(link.getUrl());
             List<Long> chatsIds = chats.stream().map(Chat::getId).toList();
