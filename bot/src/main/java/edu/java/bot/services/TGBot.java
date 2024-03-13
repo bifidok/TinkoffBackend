@@ -4,9 +4,11 @@ import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SetMyCommands;
 import edu.java.bot.commands.Command;
 import edu.java.bot.commands.CommandManager;
+import edu.java.bot.dto.LinkUpdateRequest;
 import edu.java.bot.models.User;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
@@ -53,6 +55,16 @@ public class TGBot implements Bot {
             }
         }
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
+    }
+
+    public void updateRequest(LinkUpdateRequest updateRequest) {
+        for (Long chatId : updateRequest.getTgChatIds()) {
+            String description = String.format("New update in %s \n%s",
+                updateRequest.getUrl().toString(),
+                updateRequest.getDescription());
+            SendMessage message = new SendMessage(chatId, description);
+            api.execute(message);
+        }
     }
 
     private void processText(Update update) {
