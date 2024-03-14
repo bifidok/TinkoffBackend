@@ -62,7 +62,6 @@ public class JdbcChatService implements ChatService {
         if (chat == null) {
             throw new ChatNotFoundException();
         }
-        chatLinkRepository.removeByChat(chat);
         chatRepository.remove(chat);
     }
 }

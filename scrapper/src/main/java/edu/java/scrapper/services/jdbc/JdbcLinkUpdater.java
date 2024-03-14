@@ -55,6 +55,7 @@ public class JdbcLinkUpdater implements LinkUpdater {
     }
 
     private OffsetDateTime getDateTimeMinusDelay() {
-        return OffsetDateTime.now().minusHours(linkInspectionDelayInHours);
+        //TODO hours
+        return OffsetDateTime.now().minusSeconds(linkInspectionDelayInHours);
     }
 }

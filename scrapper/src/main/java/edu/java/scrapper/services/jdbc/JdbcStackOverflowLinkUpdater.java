@@ -35,13 +35,12 @@ public class JdbcStackOverflowLinkUpdater {
     }
 
     public void update(StackOverflowLink stackOverflowLink, Link link) {
-        QuestionResponse questionResponse = stackOverflowClient.get(stackOverflowLink.questionId());
-        QuestionResponse.ItemResponse response = questionResponse.items().getFirst();
-        checkByLastActivity(link, response);
-        updateLinkDates(link, response.lastActivity());
+        checkByLastActivity(link, stackOverflowLink);
     }
 
-    private void checkByLastActivity(Link link, QuestionResponse.ItemResponse response) {
+    private void checkByLastActivity(Link link, StackOverflowLink stackOverflowLink) {
+        QuestionResponse questionResponse = stackOverflowClient.get(stackOverflowLink.questionId());
+        QuestionResponse.ItemResponse response = questionResponse.items().getFirst();
         if (link.getLastActivity().isBefore(response.lastActivity())) {
             List<Chat> chats = chatService.findAll(link.getUrl());
             List<Long> chatsIds = chats.stream().map(Chat::getId).toList();
@@ -49,6 +48,7 @@ public class JdbcStackOverflowLinkUpdater {
                 new LinkUpdateRequest(link.getId(), link.getUrl(), "Check new updates", chatsIds);
             botClient.checkUpdate(request);
         }
+        updateLinkDates(link, response.lastActivity());
     }
 
     private void updateLinkDates(Link link, OffsetDateTime lastActivity) {

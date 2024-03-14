@@ -66,6 +66,22 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
 
         assertThat(links.contains(link)).isTrue();
     }
+    @Test
+    @Transactional
+    @Rollback
+    public void update_shouldChangeLastActivity() {
+        OffsetDateTime lastOffsetDateTime = OffsetDateTime.MIN;
+        Link link = new Link(URI.create("https://localhost:8080"),lastOffsetDateTime);
+        jdbcLinkRepository.add(link);
+        link = jdbcLinkRepository.findByUrl(link.getUrl());
+        OffsetDateTime updatedOffsetDateTime = OffsetDateTime.MAX;
+        link.setLastActivity(updatedOffsetDateTime);
+
+        jdbcLinkRepository.update(link);
+        Link updatedLink = jdbcLinkRepository.findByUrl(link.getUrl());
+
+        assertThat(updatedLink.getLastActivity()).isEqualTo(link.getLastActivity());
+    }
 
     @Test
     @Transactional

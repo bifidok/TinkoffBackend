@@ -12,8 +12,4 @@ public interface ChatLinkRepository {
     void add(Chat chat, Link link);
 
     void remove(Chat chat, Link link);
-
-    void removeByLink(Link link);
-
-    void removeByChat(Chat chat);
 }

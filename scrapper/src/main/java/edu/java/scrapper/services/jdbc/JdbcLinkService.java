@@ -85,6 +85,5 @@ public class JdbcLinkService implements LinkService {
         if (chat == null) {
             throw new ChatNotFoundException();
         }
-        chatLinkRepository.remove(chat, link);
     }
 }

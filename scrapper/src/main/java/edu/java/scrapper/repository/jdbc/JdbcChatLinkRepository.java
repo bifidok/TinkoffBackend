@@ -60,22 +60,4 @@ public class JdbcChatLinkRepository implements ChatLinkRepository {
             link.getId()
         );
     }
-
-    @Override
-    @Transactional
-    public void removeByLink(Link link) {
-        jdbcTemplate.update(
-            "delete from chats_links where link_id = ?",
-            link.getId()
-        );
-    }
-
-    @Override
-    @Transactional
-    public void removeByChat(Chat chat) {
-        jdbcTemplate.update(
-            "delete from chats_links where chat_id = ?",
-            chat.getId()
-        );
-    }
 }
