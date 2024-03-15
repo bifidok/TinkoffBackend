@@ -2,9 +2,9 @@ package edu.java.scrapper.clients;
 
 import edu.java.scrapper.clients.responses.RepositoryCommitsResponse;
 import edu.java.scrapper.clients.responses.RepositoryResponse;
+import java.util.List;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.service.annotation.GetExchange;
-import java.util.List;
 
 public interface GitHubClient {
     @GetExchange("/repos/{owner}/{repo}")

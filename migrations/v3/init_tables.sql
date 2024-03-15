@@ -23,4 +23,10 @@ create table if not exists Repositories
     link_id          int references Links (id) on delete cascade unique,
     last_commit_date timestamp with time zone not null
 );
+create table Questions
+(
+    id bigint primary key,
+    link_id int references Links(id) on delete cascade unique,
+    answer_count int not null
+)
 

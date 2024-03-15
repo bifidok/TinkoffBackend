@@ -12,9 +12,13 @@ public interface LinkService {
 
     List<Link> findByCheckDateMoreThan(OffsetDateTime dateTime);
 
+    Link findByUrl(URI url);
+
     void add(long tgChatId, URI url);
 
     void update(Link link);
 
     void remove(long tgChatId, URI url);
+
+    void remove(URI url);
 }

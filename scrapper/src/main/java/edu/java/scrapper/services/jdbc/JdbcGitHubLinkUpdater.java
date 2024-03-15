@@ -108,8 +108,7 @@ public class JdbcGitHubLinkUpdater {
                 .append(response.commit().author().name())
                 .append("\n")
                 .append("Commit date: ")
-                .append(response.commit().author().commitDateTime())
-                .append("\n-----------------------------\n");
+                .append(response.commit().author().commitDateTime());
         }
         return message.toString();
     }

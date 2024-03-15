@@ -52,6 +52,11 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Override
+    public Link findByUrl(URI url) {
+        return linkRepository.findByUrl(url);
+    }
+
+    @Override
     public void add(long tgChatId, URI url) {
         Chat chat = chatRepository.findById(tgChatId);
         if (chat == null) {
@@ -85,5 +90,15 @@ public class JdbcLinkService implements LinkService {
         if (chat == null) {
             throw new ChatNotFoundException();
         }
+        chatLinkRepository.remove(chat, link);
+    }
+
+    @Override
+    public void remove(URI url) {
+        Link link = linkRepository.findByUrl(url);
+        if (link == null) {
+            throw new LinkNotFoundException();
+        }
+        linkRepository.remove(link.getUrl());
     }
 }

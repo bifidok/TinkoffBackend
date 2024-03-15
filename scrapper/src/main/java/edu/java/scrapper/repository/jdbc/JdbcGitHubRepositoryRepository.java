@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
 
 @Repository
 @Slf4j
@@ -24,15 +23,13 @@ public class JdbcGitHubRepositoryRepository implements GitHubRepositoryRepositor
 
     @Override
     @Transactional(readOnly = true)
-    public List<GitHubRepository> findAll() {
-        return jdbcTemplate.query("select * from repositories", new BeanPropertyRowMapper<>(GitHubRepository.class));
-    }
-    @Override
-    @Transactional(readOnly = true)
     public GitHubRepository findByLink(Link link) {
         String query = String.format("select * from repositories where link_id = %d", link.getId());
         try {
-            return jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(GitHubRepository.class));
+            GitHubRepository gitHubRepository =
+                jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(GitHubRepository.class));
+            gitHubRepository.setLink(link);
+            return gitHubRepository;
         } catch (DataAccessException exception) {
             log.info(exception.getMessage());
         }
@@ -52,7 +49,6 @@ public class JdbcGitHubRepositoryRepository implements GitHubRepositoryRepositor
     public void remove(GitHubRepository repository) {
         jdbcTemplate.update("delete from repositories where id = ?", repository.getId());
     }
-
 
     @Override
     @Transactional

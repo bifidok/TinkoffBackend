@@ -4,7 +4,6 @@ import edu.java.scrapper.clients.BotClient;
 import edu.java.scrapper.clients.GitHubClient;
 import edu.java.scrapper.clients.StackOverflowClient;
 import edu.java.scrapper.exceptions.GitHubClientException;
-import edu.java.scrapper.exceptions.LinkNotFoundException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatusCode;
@@ -18,7 +17,7 @@ public class ClientConfig {
     @Bean
     public GitHubClient gitHubClient(ApplicationConfig applicationConfig) {
         WebClient webClient = WebClient.builder()
-            .defaultStatusHandler(HttpStatusCode::isError,clientResponse ->
+            .defaultStatusHandler(HttpStatusCode::isError, clientResponse ->
                 Mono.just(new GitHubClientException())
             )
             .baseUrl(applicationConfig.gitHubBaseUrl())

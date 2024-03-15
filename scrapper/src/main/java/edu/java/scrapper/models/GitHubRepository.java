@@ -1,9 +1,8 @@
 package edu.java.scrapper.models;
 
-import lombok.AllArgsConstructor;
+import java.time.OffsetDateTime;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.OffsetDateTime;
 
 @Data
 @NoArgsConstructor

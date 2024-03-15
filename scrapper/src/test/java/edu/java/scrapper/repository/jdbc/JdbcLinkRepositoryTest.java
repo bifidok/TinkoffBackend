@@ -95,17 +95,4 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
 
         assertThat(links.contains(link)).isFalse();
     }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void removeById_shouldRemoveLink() {
-        Link link = new Link(URI.create("https://localhost:8080"), OffsetDateTime.now());
-
-        System.out.println(link.getId());
-        jdbcLinkRepository.remove(link.getUrl());
-        List<Link> links = jdbcLinkRepository.findAll();
-
-        assertThat(links.contains(link)).isFalse();
-    }
 }

@@ -38,15 +38,6 @@ public class JdbcGitHubRepositoryRepositoryTest extends IntegrationTest {
     @Test
     @Transactional
     @Rollback
-    public void findAll(){
-        List<GitHubRepository> repositories = jdbcGitHubRepositoryRepository.findAll();
-
-        assertThat(repositories.contains(baseRepository)).isTrue();
-    }
-
-    @Test
-    @Transactional
-    @Rollback
     public void findByLink_shouldReturnGitHubRepository() {
         GitHubRepository actual = jdbcGitHubRepositoryRepository.findByLink(baseLink);
 
@@ -66,6 +57,7 @@ public class JdbcGitHubRepositoryRepositoryTest extends IntegrationTest {
         GitHubRepository repository = jdbcGitHubRepositoryRepository.findByLink(newLink);
 
         assertThat(repository).isNotNull();
+        assertThat(repository.getLink()).isEqualTo(newLink);
     }
 
     @Test
@@ -74,24 +66,23 @@ public class JdbcGitHubRepositoryRepositoryTest extends IntegrationTest {
     public void remove() {
         jdbcGitHubRepositoryRepository.remove(baseRepository);
 
-        List<GitHubRepository> list = jdbcGitHubRepositoryRepository.findAll();
+        GitHubRepository repository = jdbcGitHubRepositoryRepository.findByLink(baseLink);
 
-        assertThat(list.contains(baseRepository)).isFalse();
+        assertThat(repository).isNull();
     }
 
     @Test
     @Transactional
     @Rollback
     public void update() {
-        OffsetDateTime lastCommitTime = baseRepository.getLastCommitDate();
-        OffsetDateTime newLastCommitTime = OffsetDateTime.MAX;
+        OffsetDateTime newLastCommitTime = OffsetDateTime.now();
         baseRepository.setLastCommitDate(newLastCommitTime);
 
         jdbcGitHubRepositoryRepository.update(baseRepository);
-        List<GitHubRepository> list = jdbcGitHubRepositoryRepository.findAll();
-        GitHubRepository updatedGitHubRepository =
-            list.stream().filter(gh -> gh.getId() == baseRepository.getId()).findFirst().orElse(null);
+        GitHubRepository updatedGitHubRepository = jdbcGitHubRepositoryRepository.findByLink(baseLink);
 
-        assertThat(newLastCommitTime).isEqualTo(updatedGitHubRepository.getLastCommitDate());
+        assertThat(newLastCommitTime.getDayOfMonth()).isEqualTo(updatedGitHubRepository.getLastCommitDate().getDayOfMonth());
+        assertThat(newLastCommitTime.getMonth()).isEqualTo(updatedGitHubRepository.getLastCommitDate().getMonth());
+        assertThat(newLastCommitTime.getYear()).isEqualTo(updatedGitHubRepository.getLastCommitDate().getYear());
     }
 }

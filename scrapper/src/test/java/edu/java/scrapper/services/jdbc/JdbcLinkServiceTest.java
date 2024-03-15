@@ -3,6 +3,7 @@ package edu.java.scrapper.services.jdbc;
 import edu.java.scrapper.IntegrationTest;
 import edu.java.scrapper.ScrapperApplication;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -74,6 +75,17 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     @Test
     @Transactional
     @Rollback
+    public void findByUrl_shouldReturnLink() {
+        Link someLink = links.getFirst();
+
+        Link linkByUrl = linkService.findByUrl(someLink.getUrl());
+
+        Assertions.assertEquals(someLink, linkByUrl);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
     public void add_shouldAddNewLinkAndCreateRelationToChat() {
         Link link = new Link(URI.create("http://localhost/1"));
 
@@ -95,6 +107,7 @@ public class JdbcLinkServiceTest extends IntegrationTest {
             linkService.add(defaultChatId, link.getUrl());
         });
     }
+
     @Test
     @Transactional
     @Rollback
@@ -110,10 +123,39 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     @Test
     @Transactional
     @Rollback
+    public void update_shouldUpdateLastActivity() {
+        Link link = new Link(URI.create("http://localhost/1"));
+        Chat chat = new Chat(32123L);
+        chatService.register(chat.getId());
+        linkService.add(chat.getId(), link.getUrl());
+        link = linkService.findByUrl(link.getUrl());
+        OffsetDateTime updatedDateTime = OffsetDateTime.MAX;
+        link.setLastActivity(updatedDateTime);
+
+        linkService.update(link);
+        Link updatedLink = linkService.findByUrl(link.getUrl());
+
+        assertThat(updatedLink).isNotNull();
+        assertThat(updatedLink.getLastActivity()).isEqualTo(updatedDateTime);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void remove() {
+        linkService.remove(links.getFirst().getUrl());
+        Link link = linkService.findByUrl(links.getFirst().getUrl());
+
+        assertThat(link).isNull();
+    }
+
+    @Test
+    @Transactional
+    @Rollback
     public void remove_shouldRemoveRelationToChat() {
         Link link = links.stream().findAny().get();
 
-        linkService.remove(defaultChatId,link.getUrl());
+        linkService.remove(defaultChatId, link.getUrl());
         List<Chat> chats = chatLinkService.findChatsByLink(link);
 
         assertThat(chats.isEmpty()).isTrue();
@@ -125,8 +167,8 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     public void remove_shouldThrowLinkNotFoundException_whenLinkNotExist() {
         Link link = new Link(URI.create("http://localhost/1"));
 
-        Assertions.assertThrows(LinkNotFoundException.class, () ->{
-           linkService.remove(defaultChatId,link.getUrl());
+        Assertions.assertThrows(LinkNotFoundException.class, () -> {
+            linkService.remove(defaultChatId, link.getUrl());
         });
     }
 }
