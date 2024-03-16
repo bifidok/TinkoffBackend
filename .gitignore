@@ -2,7 +2,6 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-scrapper/src/main/java/edu/java/scrapper/repositories/jooq/generated/
 
 ### STS ###
 .apt_generated
