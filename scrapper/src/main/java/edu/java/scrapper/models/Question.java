@@ -14,4 +14,9 @@ public class Question {
         this.id = id;
         this.link = link;
     }
+
+    public Question(long id, int answerCount) {
+        this.id = id;
+        this.answerCount = answerCount;
+    }
 }

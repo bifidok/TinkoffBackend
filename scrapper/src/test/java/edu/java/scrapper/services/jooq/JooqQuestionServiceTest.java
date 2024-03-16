@@ -1,11 +1,12 @@
-package edu.java.scrapper.repository.jdbc;
+package edu.java.scrapper.services.jooq;
 
 import edu.java.scrapper.IntegrationTest;
 import edu.java.scrapper.ScrapperApplication;
+import edu.java.scrapper.models.Chat;
 import edu.java.scrapper.models.Link;
 import edu.java.scrapper.models.Question;
-import edu.java.scrapper.repositories.jdbc.JdbcLinkRepository;
-import edu.java.scrapper.repositories.jdbc.JdbcQuestionRepository;
+import edu.java.scrapper.services.jdbc.JooqChatService;
+import java.net.URI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,33 +14,37 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import java.net.URI;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = ScrapperApplication.class)
 @ActiveProfiles("test")
-public class JdbcQuestionRepositoryTest extends IntegrationTest {
+public class JooqQuestionServiceTest extends IntegrationTest {
     @Autowired
-    private JdbcQuestionRepository jdbcQuestionRepository;
+    private JooqQuestionService jooqQuestionService;
     @Autowired
-    private JdbcLinkRepository jdbcLinkRepository;
-    private Link baseLink;
+    private JooqLinkService jooqLinkService;
+    @Autowired
+    private JooqChatService jooqChatService;
     private Question baseQuestion;
+    private Link baseLink;
+    private Chat baseChat;
 
     @BeforeEach
-    public void initEach(){
+    public void initEach() {
+        baseChat = new Chat(123L);
+        jooqChatService.register(baseChat.getId());
         baseLink = new Link(URI.create("http://someLink"));
-        jdbcLinkRepository.add(baseLink);
-        baseLink = jdbcLinkRepository.findByUrl(baseLink.getUrl());
-        baseQuestion = new Question(2323,baseLink);
-        jdbcQuestionRepository.add(baseQuestion);
+        jooqLinkService.add(baseChat.getId(),baseLink.getUrl());
+        baseLink = jooqLinkService.findByUrl(baseLink.getUrl());
+        baseQuestion = new Question(2323, baseLink);
+        jooqQuestionService.add(baseQuestion);
     }
 
     @Test
     @Transactional
     @Rollback
     public void findByLink() {
-        Question question1 = jdbcQuestionRepository.findByLink(baseLink);
+        Question question1 = jooqQuestionService.findByLink(baseLink);
 
         assertThat(question1.getId()).isEqualTo(baseQuestion.getId());
     }
@@ -48,7 +53,7 @@ public class JdbcQuestionRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void add() {
-        Question question = jdbcQuestionRepository.findByLink(baseLink);
+        Question question = jooqQuestionService.findByLink(baseLink);
 
         assertThat(question.getId()).isEqualTo(baseQuestion.getId());
     }
@@ -57,8 +62,8 @@ public class JdbcQuestionRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void remove() {
-        jdbcQuestionRepository.remove(baseQuestion);
-        Question question = jdbcQuestionRepository.findByLink(baseLink);
+        jooqQuestionService.remove(baseQuestion);
+        Question question = jooqQuestionService.findByLink(baseLink);
 
         assertThat(question).isNull();
     }
@@ -69,8 +74,8 @@ public class JdbcQuestionRepositoryTest extends IntegrationTest {
     public void update() {
         baseQuestion.setAnswerCount(5);
 
-        jdbcQuestionRepository.update(baseQuestion);
-        Question question = jdbcQuestionRepository.findByLink(baseLink);
+        jooqQuestionService.update(baseQuestion);
+        Question question = jooqQuestionService.findByLink(baseLink);
 
         assertThat(question.getAnswerCount()).isEqualTo(baseQuestion.getAnswerCount());
     }

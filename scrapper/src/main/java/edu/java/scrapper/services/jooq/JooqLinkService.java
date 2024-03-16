@@ -1,4 +1,4 @@
-package edu.java.scrapper.services.jdbc;
+package edu.java.scrapper.services.jooq;
 
 import edu.java.scrapper.exceptions.ChatNotFoundException;
 import edu.java.scrapper.exceptions.LinkNotCreatedException;
@@ -12,23 +12,20 @@ import edu.java.scrapper.services.LinkService;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service("jdbcLinkService")
-public class JdbcLinkService implements LinkService {
-
+@Service("jooqLinkService")
+public class JooqLinkService implements LinkService {
     private final LinkRepository linkRepository;
     private final ChatRepository chatRepository;
     private final ChatLinkRepository chatLinkRepository;
 
-    @Autowired
-    public JdbcLinkService(
-        @Qualifier("jdbcLinkRepository") LinkRepository linkRepository,
-        @Qualifier("jdbcChatRepository") ChatRepository chatRepository,
-        @Qualifier("jdbcChatLinkRepository") ChatLinkRepository chatLinkRepository
+    public JooqLinkService(
+        @Qualifier("jooqLinkRepository") LinkRepository linkRepository,
+        @Qualifier("jooqChatRepository") ChatRepository chatRepository,
+        @Qualifier("jooqChatLinkRepository") ChatLinkRepository chatLinkRepository
     ) {
         this.linkRepository = linkRepository;
         this.chatRepository = chatRepository;

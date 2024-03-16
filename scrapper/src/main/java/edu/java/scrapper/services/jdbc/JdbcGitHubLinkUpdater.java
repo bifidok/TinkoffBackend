@@ -16,6 +16,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,8 +29,10 @@ public class JdbcGitHubLinkUpdater {
 
     @Autowired
     public JdbcGitHubLinkUpdater(
-        LinkService linkService,
-        GitHubRepositoryService gitHubRepositoryService, ChatService chatService, GitHubClient gitHubClient,
+        @Qualifier("jdbcLinkService") LinkService linkService,
+        @Qualifier("jdbcGitHubRepositoryService") GitHubRepositoryService gitHubRepositoryService,
+        @Qualifier("jooqChatService") ChatService chatService,
+        GitHubClient gitHubClient,
         BotClient botClient
     ) {
         this.linkService = linkService;

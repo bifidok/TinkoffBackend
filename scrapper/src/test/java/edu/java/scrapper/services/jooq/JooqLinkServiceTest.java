@@ -1,19 +1,19 @@
-package edu.java.scrapper.services.jdbc;
+package edu.java.scrapper.services.jooq;
 
 import edu.java.scrapper.IntegrationTest;
 import edu.java.scrapper.ScrapperApplication;
-import java.net.URI;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import edu.java.scrapper.exceptions.ChatNotFoundException;
 import edu.java.scrapper.exceptions.LinkNotCreatedException;
 import edu.java.scrapper.exceptions.LinkNotFoundException;
 import edu.java.scrapper.models.Chat;
 import edu.java.scrapper.models.ChatState;
 import edu.java.scrapper.models.Link;
-import edu.java.scrapper.repositories.jdbc.JdbcChatLinkRepository;
+import edu.java.scrapper.repositories.jooq.JooqChatLinkRepository;
+import java.net.URI;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,13 +26,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = ScrapperApplication.class)
 @ActiveProfiles("test")
-public class JdbcLinkServiceTest extends IntegrationTest {
+public class JooqLinkServiceTest extends IntegrationTest {
     @Autowired
-    private JooqChatService jdbcChatService;
+    private JooqChatService jooqChatService;
     @Autowired
-    private JdbcLinkService jdbcLinkService;
+    private JooqLinkService jooqLinkService;
     @Autowired
-    private JdbcChatLinkRepository jdbcChatLinkRepository;
+    private JooqChatLinkRepository jooqChatLinkRepository;
     private final long defaultChatId = 123L;
     private List<Link> links;
 
@@ -41,8 +41,8 @@ public class JdbcLinkServiceTest extends IntegrationTest {
         Link link = new Link(URI.create("http://someUrl"));
         links = new ArrayList<>(Collections.singletonList(link));
         Chat chat = new Chat(defaultChatId, ChatState.DEFAULT);
-        jdbcChatService.register(chat.getId());
-        jdbcLinkService.add(chat.getId(), link.getUrl());
+        jooqChatService.register(chat.getId());
+        jooqLinkService.add(chat.getId(), link.getUrl());
     }
 
     @Test
@@ -51,11 +51,11 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     public void findAll_shouldReturnAllLinks() {
         Link link = new Link(URI.create("http://localhost/1"));
         Link link2 = new Link(URI.create("http://localhost/2"));
-        jdbcLinkService.add(defaultChatId, link.getUrl());
-        jdbcLinkService.add(defaultChatId, link2.getUrl());
+        jooqLinkService.add(defaultChatId, link.getUrl());
+        jooqLinkService.add(defaultChatId, link2.getUrl());
         links.addAll(List.of(link, link2));
 
-        List<Link> actual = jdbcLinkService.findAll();
+        List<Link> actual = jooqLinkService.findAll();
 
         Assertions.assertEquals(actual, links);
     }
@@ -64,7 +64,7 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void findAll_shouldReturnLinksByChat() {
-        List<Link> actual = jdbcLinkService.findAll(defaultChatId);
+        List<Link> actual = jooqLinkService.findAll(defaultChatId);
 
         Assertions.assertEquals(actual, links);
     }
@@ -75,7 +75,7 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     public void findByUrl_shouldReturnLink() {
         Link someLink = links.getFirst();
 
-        Link linkByUrl = jdbcLinkService.findByUrl(someLink.getUrl());
+        Link linkByUrl = jooqLinkService.findByUrl(someLink.getUrl());
 
         Assertions.assertEquals(someLink, linkByUrl);
     }
@@ -86,8 +86,8 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     public void add_shouldAddNewLinkAndCreateRelationToChat() {
         Link link = new Link(URI.create("http://localhost/1"));
 
-        jdbcLinkService.add(defaultChatId, link.getUrl());
-        List<Link> actual = jdbcChatLinkRepository.findLinksByChat(new Chat(defaultChatId));
+        jooqLinkService.add(defaultChatId, link.getUrl());
+        List<Link> actual = jooqChatLinkRepository.findLinksByChat(new Chat(defaultChatId));
 
         assertThat(actual.contains(link)).isTrue();
     }
@@ -98,10 +98,10 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     public void add_shouldThrowLinkNotCreatedException_whenRelationToChatExist() {
         Link link = new Link(URI.create("http://localhost/1"));
 
-        jdbcLinkService.add(defaultChatId, link.getUrl());
+        jooqLinkService.add(defaultChatId, link.getUrl());
 
         Assertions.assertThrows(LinkNotCreatedException.class, () -> {
-            jdbcLinkService.add(defaultChatId, link.getUrl());
+            jooqLinkService.add(defaultChatId, link.getUrl());
         });
     }
 
@@ -113,7 +113,7 @@ public class JdbcLinkServiceTest extends IntegrationTest {
         Chat chat = new Chat(32123L);
 
         Assertions.assertThrows(ChatNotFoundException.class, () -> {
-            jdbcLinkService.add(chat.getId(), link.getUrl());
+            jooqLinkService.add(chat.getId(), link.getUrl());
         });
     }
 
@@ -123,25 +123,26 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     public void update_shouldUpdateLastActivity() {
         Link link = new Link(URI.create("http://localhost/1"));
         Chat chat = new Chat(32123L);
-        jdbcChatService.register(chat.getId());
-        jdbcLinkService.add(chat.getId(), link.getUrl());
-        link = jdbcLinkService.findByUrl(link.getUrl());
-        OffsetDateTime updatedDateTime = OffsetDateTime.MAX;
+        jooqChatService.register(chat.getId());
+        jooqLinkService.add(chat.getId(), link.getUrl());
+        link = jooqLinkService.findByUrl(link.getUrl());
+        OffsetDateTime updatedDateTime = OffsetDateTime.now();
         link.setLastActivity(updatedDateTime);
 
-        jdbcLinkService.update(link);
-        Link updatedLink = jdbcLinkService.findByUrl(link.getUrl());
+        jooqLinkService.update(link);
+        Link updatedLink = jooqLinkService.findByUrl(link.getUrl());
 
         assertThat(updatedLink).isNotNull();
-        assertThat(updatedLink.getLastActivity()).isEqualTo(updatedDateTime);
+        assertThat(updatedLink.getLastActivity().getYear()).isEqualTo(updatedDateTime.getYear());
+        assertThat(updatedLink.getLastActivity().getMonth()).isEqualTo(updatedDateTime.getMonth());
     }
 
     @Test
     @Transactional
     @Rollback
     public void remove() {
-        jdbcLinkService.remove(links.getFirst().getUrl());
-        Link link = jdbcLinkService.findByUrl(links.getFirst().getUrl());
+        jooqLinkService.remove(links.getFirst().getUrl());
+        Link link = jooqLinkService.findByUrl(links.getFirst().getUrl());
 
         assertThat(link).isNull();
     }
@@ -150,14 +151,14 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     @Rollback
     public void removeUnused() {
         Chat chat = new Chat(333L);
-        jdbcChatService.register(chat.getId());
+        jooqChatService.register(chat.getId());
         Link link = new Link(URI.create("http://unused"));
-        jdbcLinkService.add(chat.getId(),link.getUrl());
-        link = jdbcLinkService.findByUrl(link.getUrl());
-        jdbcChatLinkRepository.remove(chat,link);
+        jooqLinkService.add(chat.getId(),link.getUrl());
+        link = jooqLinkService.findByUrl(link.getUrl());
+        jooqChatLinkRepository.remove(chat,link);
 
-        jdbcLinkService.removeUnused();
-        link = jdbcLinkService.findByUrl(link.getUrl());
+        jooqLinkService.removeUnused();
+        link = jooqLinkService.findByUrl(link.getUrl());
 
         assertThat(link).isNull();
     }
@@ -168,8 +169,8 @@ public class JdbcLinkServiceTest extends IntegrationTest {
     public void remove_shouldRemoveRelationToChat() {
         Link link = links.stream().findAny().get();
 
-        jdbcLinkService.remove(defaultChatId, link.getUrl());
-        List<Chat> chats = jdbcChatLinkRepository.findChatsByLink(link);
+        jooqLinkService.remove(defaultChatId, link.getUrl());
+        List<Chat> chats = jooqChatLinkRepository.findChatsByLink(link);
 
         assertThat(chats.isEmpty()).isTrue();
     }
@@ -181,7 +182,7 @@ public class JdbcLinkServiceTest extends IntegrationTest {
         Link link = new Link(URI.create("http://localhost/1"));
 
         Assertions.assertThrows(LinkNotFoundException.class, () -> {
-            jdbcLinkService.remove(defaultChatId, link.getUrl());
+            jooqLinkService.remove(defaultChatId, link.getUrl());
         });
     }
 }

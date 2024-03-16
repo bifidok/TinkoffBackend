@@ -6,26 +6,28 @@ import edu.java.scrapper.exceptions.LinkNotFoundException;
 import edu.java.scrapper.models.Chat;
 import edu.java.scrapper.models.ChatState;
 import edu.java.scrapper.models.Link;
-import edu.java.scrapper.repository.ChatLinkRepository;
-import edu.java.scrapper.repository.ChatRepository;
-import edu.java.scrapper.repository.LinkRepository;
+import edu.java.scrapper.repositories.ChatLinkRepository;
+import edu.java.scrapper.repositories.ChatRepository;
+import edu.java.scrapper.repositories.LinkRepository;
 import edu.java.scrapper.services.ChatService;
 import java.net.URI;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Service
-public class JdbcChatService implements ChatService {
+@Service("jdbcChatService")
+public class JooqChatService implements ChatService {
     private final ChatRepository chatRepository;
     private final LinkRepository linkRepository;
     private final ChatLinkRepository chatLinkRepository;
 
     @Autowired
-    public JdbcChatService(
-        ChatRepository chatRepository,
-        LinkRepository linkRepository,
-        ChatLinkRepository chatLinkRepository
+    public JooqChatService(
+        @Qualifier("jdbcChatRepository") ChatRepository chatRepository,
+        @Qualifier("jdbcLinkRepository") LinkRepository linkRepository,
+        @Qualifier("jdbcChatLinkRepository") ChatLinkRepository chatLinkRepository
     ) {
         this.chatRepository = chatRepository;
         this.linkRepository = linkRepository;
@@ -33,11 +35,13 @@ public class JdbcChatService implements ChatService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Chat> findAll() {
         return chatRepository.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Chat> findAll(URI url) {
         Link link = linkRepository.findByUrl(url);
         if (link == null) {
@@ -47,6 +51,7 @@ public class JdbcChatService implements ChatService {
     }
 
     @Override
+    @Transactional
     public void register(long tgChatId) {
         Chat chat = chatRepository.findById(tgChatId);
         if (chat != null) {
@@ -57,6 +62,7 @@ public class JdbcChatService implements ChatService {
     }
 
     @Override
+    @Transactional
     public void unregister(long tgChatId) {
         Chat chat = chatRepository.findById(tgChatId);
         if (chat == null) {

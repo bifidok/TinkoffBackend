@@ -1,4 +1,4 @@
-package edu.java.scrapper.services.jdbc;
+package edu.java.scrapper.services.jooq;
 
 import edu.java.scrapper.models.GitHubRepository;
 import edu.java.scrapper.models.Link;
@@ -10,13 +10,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service("jdbcGitHubRepositoryService")
-public class JdbcGitHubRepositoryService implements GitHubRepositoryService {
+@Service("jooqGitHubRepositoryService")
+public class JooqGitHubRepositoryService implements GitHubRepositoryService {
     private final GitHubRepositoryRepository gitHubRepositoryRepository;
 
     @Autowired
-    public JdbcGitHubRepositoryService(
-        @Qualifier("jdbcGitHubRepositoryRepository") GitHubRepositoryRepository gitHubRepositoryRepository
+    public JooqGitHubRepositoryService(
+        @Qualifier("jooqGitHubRepositoryRepository") GitHubRepositoryRepository gitHubRepositoryRepository
     ) {
         this.gitHubRepositoryRepository = gitHubRepositoryRepository;
     }

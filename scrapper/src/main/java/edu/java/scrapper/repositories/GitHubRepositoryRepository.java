@@ -1,4 +1,4 @@
-package edu.java.scrapper.repository;
+package edu.java.scrapper.repositories;
 
 import edu.java.scrapper.models.GitHubRepository;
 import edu.java.scrapper.models.Link;

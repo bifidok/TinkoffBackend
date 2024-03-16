@@ -15,4 +15,9 @@ public class GitHubRepository {
         this.link = link;
         this.lastCommitDate = lastCommitDate;
     }
+
+    public GitHubRepository(int id, OffsetDateTime lastCommitDate) {
+        this.id = id;
+        this.lastCommitDate = lastCommitDate;
+    }
 }

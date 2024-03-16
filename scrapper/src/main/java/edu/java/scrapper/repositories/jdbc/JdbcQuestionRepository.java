@@ -1,8 +1,8 @@
-package edu.java.scrapper.repository.jdbc;
+package edu.java.scrapper.repositories.jdbc;
 
 import edu.java.scrapper.models.Link;
 import edu.java.scrapper.models.Question;
-import edu.java.scrapper.repository.QuestionRepository;
+import edu.java.scrapper.repositories.QuestionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-@Repository
+@Repository("jdbcQuestionRepository")
 @Slf4j
 public class JdbcQuestionRepository implements QuestionRepository {
     private final JdbcTemplate jdbcTemplate;

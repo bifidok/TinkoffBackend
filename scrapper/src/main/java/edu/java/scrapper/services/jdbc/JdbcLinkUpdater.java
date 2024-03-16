@@ -13,6 +13,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,7 +28,7 @@ public class JdbcLinkUpdater implements LinkUpdater {
     @Autowired
     public JdbcLinkUpdater(
         ApplicationConfig applicationConfig,
-        LinkService linkService,
+        @Qualifier("jdbcLinkService") LinkService linkService,
         JdbcGitHubLinkUpdater jdbcGitHubLinkUpdater,
         JdbcStackOverflowLinkUpdater jdbcStackOverflowLinkUpdater
     ) {
@@ -44,12 +45,13 @@ public class JdbcLinkUpdater implements LinkUpdater {
     @Override
     public void update() {
         OffsetDateTime dateAfterWhichInspection = getDateTimeMinusDelay();
+        linkService.removeUnused();
         List<Link> links = linkService.findByCheckDateMoreThan(dateAfterWhichInspection);
         for (Link link : links) {
             switch (linkParser.check(link.getUrl())) {
                 case GitHubLink gitHub -> jdbcGitHubLinkUpdater.update(gitHub, link);
                 case StackOverflowLink sof -> jdbcStackOverflowLinkUpdater.update(sof, link);
-                default -> log.warn("Not supported link in database");
+                default -> linkService.remove(link.getUrl());
             }
         }
     }

@@ -1,4 +1,4 @@
-package edu.java.scrapper.repository;
+package edu.java.scrapper.repositories;
 
 import edu.java.scrapper.models.Chat;
 import edu.java.scrapper.models.Link;
@@ -12,4 +12,6 @@ public interface ChatLinkRepository {
     void add(Chat chat, Link link);
 
     void remove(Chat chat, Link link);
+
+    void removeUnusedLinks();
 }

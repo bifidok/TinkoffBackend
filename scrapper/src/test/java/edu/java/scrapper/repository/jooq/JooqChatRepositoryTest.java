@@ -1,9 +1,9 @@
-package edu.java.scrapper.repository.jdbc;
+package edu.java.scrapper.repository.jooq;
 
 import edu.java.scrapper.IntegrationTest;
 import edu.java.scrapper.ScrapperApplication;
 import edu.java.scrapper.models.Chat;
-import edu.java.scrapper.repositories.jdbc.JdbcChatRepository;
+import edu.java.scrapper.repositories.jooq.JooqChatRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +18,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(classes = ScrapperApplication.class)
 @ActiveProfiles("test")
-public class JdbcChatRepositoryTest extends IntegrationTest {
+public class JooqChatRepositoryTest extends IntegrationTest {
     @Autowired
-    private JdbcChatRepository jdbcChatRepository;
+    private JooqChatRepository jooqChatRepository;
 
     @Test
     @Transactional
@@ -31,11 +31,11 @@ public class JdbcChatRepositoryTest extends IntegrationTest {
         Chat chat2 = new Chat(2);
         Chat chat3 = new Chat(3);
         List<Chat> expected = List.of(chat1,chat2,chat3);
-        jdbcChatRepository.add(chat1);
-        jdbcChatRepository.add(chat2);
-        jdbcChatRepository.add(chat3);
+        jooqChatRepository.add(chat1);
+        jooqChatRepository.add(chat2);
+        jooqChatRepository.add(chat3);
 
-        List<Chat> actual = jdbcChatRepository.findAll();
+        List<Chat> actual = jooqChatRepository.findAll();
 
         assertThat(expected).isNotNull();
         assertThat(actual).isNotNull();
@@ -46,9 +46,9 @@ public class JdbcChatRepositoryTest extends IntegrationTest {
     @Rollback
     public void findById_shouldReturnChatById() {
         Chat chat1 = new Chat(1);
-        jdbcChatRepository.add(chat1);
+        jooqChatRepository.add(chat1);
 
-        Chat actual = jdbcChatRepository.findById(chat1.getId());
+        Chat actual = jooqChatRepository.findById(chat1.getId());
 
         assertThat(actual.equals(chat1)).isTrue();
     }
@@ -58,8 +58,8 @@ public class JdbcChatRepositoryTest extends IntegrationTest {
     public void add_shouldAddChat() {
         Chat chat = new Chat(2);
 
-        jdbcChatRepository.add(chat);
-        List<Chat> list = jdbcChatRepository.findAll();
+        jooqChatRepository.add(chat);
+        List<Chat> list = jooqChatRepository.findAll();
 
         assertThat(list.contains(chat)).isTrue();
     }
@@ -69,10 +69,10 @@ public class JdbcChatRepositoryTest extends IntegrationTest {
     @Rollback
     public void remove_shouldRemoveChat() {
         Chat chat = new Chat(2);
-        jdbcChatRepository.add(chat);
+        jooqChatRepository.add(chat);
 
-        jdbcChatRepository.remove(chat);
-        List<Chat> list = jdbcChatRepository.findAll();
+        jooqChatRepository.remove(chat);
+        List<Chat> list = jooqChatRepository.findAll();
 
         assertThat(list.contains(chat)).isFalse();
     }

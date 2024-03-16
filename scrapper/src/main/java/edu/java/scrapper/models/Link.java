@@ -34,4 +34,10 @@ public class Link {
         lastCheckTime = OffsetDateTime.now();
     }
 
+    public Link(int id, URI url, OffsetDateTime lastActivity, OffsetDateTime lastCheckTime) {
+        this.id = id;
+        this.url = url;
+        this.lastActivity = lastActivity;
+        this.lastCheckTime = lastCheckTime;
+    }
 }

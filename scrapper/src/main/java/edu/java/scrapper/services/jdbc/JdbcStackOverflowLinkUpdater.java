@@ -14,6 +14,7 @@ import edu.java.scrapper.services.QuestionService;
 import java.time.OffsetDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,8 +28,9 @@ public class JdbcStackOverflowLinkUpdater {
     @Autowired
     public JdbcStackOverflowLinkUpdater(
         StackOverflowClient stackOverflowClient,
-        QuestionService questionService, ChatService chatService,
-        LinkService linkService,
+        @Qualifier("jdbcQuestionService") QuestionService questionService,
+        @Qualifier("jdbcChatService") ChatService chatService,
+        @Qualifier("jdbcLinkService") LinkService linkService,
         BotClient botClient
     ) {
         this.stackOverflowClient = stackOverflowClient;

@@ -5,7 +5,6 @@ import edu.java.scrapper.ScrapperApplication;
 import edu.java.scrapper.models.Chat;
 import edu.java.scrapper.models.GitHubRepository;
 import edu.java.scrapper.models.Link;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +13,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import java.net.URI;
 import java.time.OffsetDateTime;
-import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = ScrapperApplication.class)
@@ -25,7 +23,7 @@ public class JdbcGitHubRepositoryServiceTest extends IntegrationTest {
     @Autowired
     private JdbcLinkService jdbcLinkService;
     @Autowired
-    private JdbcChatService jdbcChatService;
+    private JooqChatService jdbcChatService;
 
     @Test
     @Transactional

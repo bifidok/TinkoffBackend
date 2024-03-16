@@ -1,7 +1,7 @@
-package edu.java.scrapper.repository.jdbc;
+package edu.java.scrapper.repositories.jdbc;
 
 import edu.java.scrapper.models.Link;
-import edu.java.scrapper.repository.LinkRepository;
+import edu.java.scrapper.repositories.LinkRepository;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -11,9 +11,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
-@Repository
+@Repository("jdbcLinkRepository")
 @Slf4j
 public class JdbcLinkRepository implements LinkRepository {
     private final JdbcTemplate jdbcTemplate;
@@ -24,20 +23,17 @@ public class JdbcLinkRepository implements LinkRepository {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<Link> findAll() {
         return jdbcTemplate.query("select * from links", new BeanPropertyRowMapper<>(Link.class));
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<Link> findByCheckDateMoreThan(OffsetDateTime dateTime) {
         String query = String.format("select * from links where last_check_time < '%s'", dateTime.toString());
         return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(Link.class));
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Link findByUrl(URI url) {
         String query = String.format("select * from links where url = '%s'", url.toString());
         try {
@@ -49,7 +45,6 @@ public class JdbcLinkRepository implements LinkRepository {
     }
 
     @Override
-    @Transactional
     public void add(Link link) {
         jdbcTemplate.update(
             "insert into links(url, last_activity,last_check_time) values(?, ?, ?)",
@@ -60,7 +55,6 @@ public class JdbcLinkRepository implements LinkRepository {
     }
 
     @Override
-    @Transactional
     public void update(Link link) {
         jdbcTemplate.update(
             "update links set last_check_time = ?, last_activity = ? where id = ?",
@@ -71,7 +65,6 @@ public class JdbcLinkRepository implements LinkRepository {
     }
 
     @Override
-    @Transactional
     public void remove(URI url) {
         jdbcTemplate.update(
             "delete from links where url = ?",

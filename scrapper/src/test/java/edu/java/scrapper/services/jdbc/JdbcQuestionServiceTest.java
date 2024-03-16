@@ -23,7 +23,7 @@ public class JdbcQuestionServiceTest extends IntegrationTest {
     @Autowired
     private JdbcLinkService jdbcLinkService;
     @Autowired
-    private JdbcChatService jdbcChatService;
+    private JooqChatService jdbcChatService;
     private Question baseQuestion;
     private Link baseLink;
     private Chat baseChat;

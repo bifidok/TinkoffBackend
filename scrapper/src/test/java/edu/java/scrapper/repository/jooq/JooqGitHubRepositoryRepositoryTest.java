@@ -1,14 +1,11 @@
-package edu.java.scrapper.repository.jdbc;
+package edu.java.scrapper.repository.jooq;
 
 import edu.java.scrapper.IntegrationTest;
 import edu.java.scrapper.ScrapperApplication;
 import edu.java.scrapper.models.GitHubRepository;
 import edu.java.scrapper.models.Link;
-import java.net.URI;
-import java.time.OffsetDateTime;
-
-import edu.java.scrapper.repositories.jdbc.JdbcGitHubRepositoryRepository;
-import edu.java.scrapper.repositories.jdbc.JdbcLinkRepository;
+import edu.java.scrapper.repositories.jooq.JooqGitHubRepositoryRepository;
+import edu.java.scrapper.repositories.jooq.JooqLinkRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,32 +13,34 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import java.net.URI;
+import java.time.OffsetDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = ScrapperApplication.class)
 @ActiveProfiles("test")
-public class JdbcGitHubRepositoryRepositoryTest extends IntegrationTest {
+public class JooqGitHubRepositoryRepositoryTest extends IntegrationTest {
     @Autowired
-    private JdbcGitHubRepositoryRepository jdbcGitHubRepositoryRepository;
+    private JooqGitHubRepositoryRepository jooqGitHubRepositoryRepository;
     @Autowired
-    private JdbcLinkRepository jdbcLinkRepository;
+    private JooqLinkRepository jooqLinkRepository;
     private Link baseLink;
     private GitHubRepository baseRepository;
 
     @BeforeEach
     public void initAll() {
         baseLink = new Link(URI.create("http:/localhost/"));
-        jdbcLinkRepository.add(baseLink);
-        baseLink = jdbcLinkRepository.findByUrl(baseLink.getUrl());
+        jooqLinkRepository.add(baseLink);
+        baseLink = jooqLinkRepository.findByUrl(baseLink.getUrl());
         baseRepository = new GitHubRepository(baseLink, OffsetDateTime.now());
-        jdbcGitHubRepositoryRepository.add(baseRepository);
-        baseRepository = jdbcGitHubRepositoryRepository.findByLink(baseLink);
+        jooqGitHubRepositoryRepository.add(baseRepository);
+        baseRepository = jooqGitHubRepositoryRepository.findByLink(baseLink);
     }
     @Test
     @Transactional
     @Rollback
     public void findByLink_shouldReturnGitHubRepository() {
-        GitHubRepository actual = jdbcGitHubRepositoryRepository.findByLink(baseLink);
+        GitHubRepository actual = jooqGitHubRepositoryRepository.findByLink(baseLink);
 
         assertThat(baseRepository).isEqualTo(actual);
     }
@@ -51,12 +50,12 @@ public class JdbcGitHubRepositoryRepositoryTest extends IntegrationTest {
     @Rollback
     public void add() {
         Link newLink = new Link(URI.create("http:/localhost/some"));
-        jdbcLinkRepository.add(newLink);
-        newLink = jdbcLinkRepository.findByUrl(newLink.getUrl());
+        jooqLinkRepository.add(newLink);
+        newLink = jooqLinkRepository.findByUrl(newLink.getUrl());
         GitHubRepository newRepository = new GitHubRepository(newLink, OffsetDateTime.now());
 
-        jdbcGitHubRepositoryRepository.add(newRepository);
-        GitHubRepository repository = jdbcGitHubRepositoryRepository.findByLink(newLink);
+        jooqGitHubRepositoryRepository.add(newRepository);
+        GitHubRepository repository = jooqGitHubRepositoryRepository.findByLink(newLink);
 
         assertThat(repository).isNotNull();
         assertThat(repository.getLink()).isEqualTo(newLink);
@@ -66,9 +65,9 @@ public class JdbcGitHubRepositoryRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void remove() {
-        jdbcGitHubRepositoryRepository.remove(baseRepository);
+        jooqGitHubRepositoryRepository.remove(baseRepository);
 
-        GitHubRepository repository = jdbcGitHubRepositoryRepository.findByLink(baseLink);
+        GitHubRepository repository = jooqGitHubRepositoryRepository.findByLink(baseLink);
 
         assertThat(repository).isNull();
     }
@@ -80,8 +79,8 @@ public class JdbcGitHubRepositoryRepositoryTest extends IntegrationTest {
         OffsetDateTime newLastCommitTime = OffsetDateTime.now();
         baseRepository.setLastCommitDate(newLastCommitTime);
 
-        jdbcGitHubRepositoryRepository.update(baseRepository);
-        GitHubRepository updatedGitHubRepository = jdbcGitHubRepositoryRepository.findByLink(baseLink);
+        jooqGitHubRepositoryRepository.update(baseRepository);
+        GitHubRepository updatedGitHubRepository = jooqGitHubRepositoryRepository.findByLink(baseLink);
 
         assertThat(newLastCommitTime.getMonth()).isEqualTo(updatedGitHubRepository.getLastCommitDate().getMonth());
         assertThat(newLastCommitTime.getYear()).isEqualTo(updatedGitHubRepository.getLastCommitDate().getYear());

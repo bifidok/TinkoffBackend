@@ -21,4 +21,6 @@ public interface LinkService {
     void remove(long tgChatId, URI url);
 
     void remove(URI url);
+
+    void removeUnused();
 }
