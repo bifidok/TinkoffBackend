@@ -23,7 +23,7 @@ public class JdbcGitHubRepositoryServiceTest extends IntegrationTest {
     @Autowired
     private JdbcLinkService jdbcLinkService;
     @Autowired
-    private JooqChatService jdbcChatService;
+    private JdbcChatService jdbcChatService;
 
     @Test
     @Transactional

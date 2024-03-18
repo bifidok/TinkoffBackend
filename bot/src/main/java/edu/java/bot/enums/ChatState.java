@@ -3,13 +3,13 @@ package edu.java.bot.enums;
 /**
  * User chat state in commands where we need to track the stage
  */
-public enum UserState {
+public enum ChatState {
     DEFAULT(""),
     TRACK("/track"),
     UNTRACK("/untrack");
     private final String commandName;
 
-    UserState(String commandName) {
+    ChatState(String commandName) {
         this.commandName = commandName;
     }
 

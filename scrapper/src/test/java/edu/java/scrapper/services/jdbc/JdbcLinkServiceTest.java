@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 public class JdbcLinkServiceTest extends IntegrationTest {
     @Autowired
-    private JooqChatService jdbcChatService;
+    private JdbcChatService jdbcChatService;
     @Autowired
     private JdbcLinkService jdbcLinkService;
     @Autowired

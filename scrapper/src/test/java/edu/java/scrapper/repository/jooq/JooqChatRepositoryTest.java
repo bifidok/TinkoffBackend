@@ -3,6 +3,7 @@ package edu.java.scrapper.repository.jooq;
 import edu.java.scrapper.IntegrationTest;
 import edu.java.scrapper.ScrapperApplication;
 import edu.java.scrapper.models.Chat;
+import edu.java.scrapper.models.ChatState;
 import edu.java.scrapper.repositories.jooq.JooqChatRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -51,6 +52,20 @@ public class JooqChatRepositoryTest extends IntegrationTest {
         Chat actual = jooqChatRepository.findById(chat1.getId());
 
         assertThat(actual.equals(chat1)).isTrue();
+    }
+    @Test
+    @Transactional
+    @Rollback
+    public void update_shouldChangeChatState() {
+        Chat chat = new Chat(1, ChatState.TRACK);
+        jooqChatRepository.add(chat);
+        chat = jooqChatRepository.findById(chat.getId());
+        chat.setStatus(ChatState.UNTRACK);
+        jooqChatRepository.update(chat);
+
+        chat = jooqChatRepository.findById(chat.getId());
+
+        assertThat(chat.getStatus()).isEqualTo(ChatState.UNTRACK);
     }
     @Test
     @Transactional

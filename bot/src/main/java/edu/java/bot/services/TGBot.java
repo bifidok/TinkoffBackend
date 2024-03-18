@@ -9,7 +9,7 @@ import com.pengrad.telegrambot.request.SetMyCommands;
 import edu.java.bot.commands.Command;
 import edu.java.bot.commands.CommandManager;
 import edu.java.bot.dto.LinkUpdateRequest;
-import edu.java.bot.models.User;
+import edu.java.bot.models.Chat;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +21,10 @@ import org.springframework.stereotype.Component;
 public class TGBot implements Bot {
     private final CommandManager commandManager;
     private final TelegramApi api;
-    private final UserService userService;
+    private final ScrapperService userService;
 
     @Autowired
-    public TGBot(CommandManager commandManager, TelegramApi api, UserService userService) {
+    public TGBot(CommandManager commandManager, TelegramApi api, ScrapperService userService) {
         this.commandManager = commandManager;
         this.api = api;
         this.userService = userService;
@@ -68,11 +68,11 @@ public class TGBot implements Bot {
     }
 
     private void processText(Update update) {
-        User user = userService.findByTelegramId(update.message().chat().id());
-        if (user == null) {
+        Chat chat = userService.findChat(update.message().chat().id());
+        if (chat == null) {
             return;
         }
-        Command lastCommand = commandManager.findCommandByName(user.getState().getCommandName());
+        Command lastCommand = commandManager.findCommandByName(chat.getState().getCommandName());
         if (lastCommand != null) {
             api.execute(lastCommand.handle(update.message(), update.message().chat().id()));
         } else {

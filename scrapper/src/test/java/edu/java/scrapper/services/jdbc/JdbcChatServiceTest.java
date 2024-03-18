@@ -26,7 +26,7 @@ public class JdbcChatServiceTest extends IntegrationTest {
     private final long defaultChatId = 123L;
     private final URI defaultLink = URI.create("http://someUrl");
     @Autowired
-    private JooqChatService jdbcChatService;
+    private JdbcChatService jdbcChatService;
     @Autowired
     private JdbcLinkService jdbcLinkService;
     @Autowired
@@ -59,7 +59,41 @@ public class JdbcChatServiceTest extends IntegrationTest {
         assertThat(chats.size() == 1).isTrue();
         assertThat(chats.contains(new Chat(defaultChatId))).isTrue();
     }
+    @Test
+    @Transactional
+    @Rollback
+    public void findById_whenNotNull() {
+        Chat chat = jdbcChatService.findById(defaultChatId);
 
+        assertThat(chat).isNotNull();
+    }
+    @Test
+    @Transactional
+    @Rollback
+    public void findById_whenNull() {
+        Chat chat = jdbcChatService.findById(2222);
+
+        assertThat(chat).isNull();
+    }
+    @Test
+    @Transactional
+    @Rollback
+    public void update_whenChatExist() {
+        Chat chat = jdbcChatService.findById(defaultChatId);
+        chat.setStatus(ChatState.UNTRACK);
+        jdbcChatService.update(chat.getId(),chat.getStatus());
+        chat = jdbcChatService.findById(defaultChatId);
+
+        assertThat(chat.getStatus()).isEqualTo(ChatState.UNTRACK);
+    }
+    @Test
+    @Transactional
+    @Rollback
+    public void update_whenChatNotExist() {
+        Assertions.assertThrows(ChatNotFoundException.class, () -> {
+            jdbcChatService.update(3821L,ChatState.TRACK);
+        });
+    }
     @Test
     @Transactional
     @Rollback

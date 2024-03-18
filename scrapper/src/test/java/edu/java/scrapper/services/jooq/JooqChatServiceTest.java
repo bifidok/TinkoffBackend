@@ -8,6 +8,8 @@ import edu.java.scrapper.models.Chat;
 import edu.java.scrapper.models.ChatState;
 import edu.java.scrapper.models.Link;
 import edu.java.scrapper.repositories.jooq.JooqChatLinkRepository;
+import java.net.URI;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,8 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import java.net.URI;
-import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = ScrapperApplication.class)
@@ -58,6 +58,45 @@ public class JooqChatServiceTest extends IntegrationTest {
 
         assertThat(chats.size() == 1).isTrue();
         assertThat(chats.contains(new Chat(defaultChatId))).isTrue();
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void findById_whenNotNull() {
+        Chat chat = jooqChatService.findById(defaultChatId);
+
+        assertThat(chat).isNotNull();
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void findById_whenNull() {
+        Chat chat = jooqChatService.findById(2222);
+
+        assertThat(chat).isNull();
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void update_whenChatExist() {
+        Chat chat = jooqChatService.findById(defaultChatId);
+        chat.setStatus(ChatState.UNTRACK);
+        jooqChatService.update(chat.getId(), chat.getStatus());
+        chat = jooqChatService.findById(defaultChatId);
+
+        assertThat(chat.getStatus()).isEqualTo(ChatState.UNTRACK);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void update_whenChatNotExist() {
+        Assertions.assertThrows(ChatNotFoundException.class, () -> {
+            jooqChatService.update(3821L, ChatState.TRACK);
+        });
     }
 
     @Test

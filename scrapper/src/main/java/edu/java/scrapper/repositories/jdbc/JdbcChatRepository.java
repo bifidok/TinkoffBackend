@@ -37,6 +37,15 @@ public class JdbcChatRepository implements ChatRepository {
     }
 
     @Override
+    public void update(Chat chat) {
+        jdbcTemplate.update(
+            "update chats set status = ?::state where id = ?",
+            chat.getStatus().toString(),
+            chat.getId()
+        );
+    }
+
+    @Override
     public void add(Chat chat) {
         jdbcTemplate.update(
             "insert into chats(id,status) values(?,?::state)",

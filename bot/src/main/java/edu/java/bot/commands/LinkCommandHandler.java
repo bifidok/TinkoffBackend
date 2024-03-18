@@ -2,44 +2,54 @@ package edu.java.bot.commands;
 
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.enums.UserState;
+import edu.java.bot.enums.ChatState;
+import edu.java.bot.exceptions.ScrapperClientException;
+import edu.java.bot.models.Chat;
 import edu.java.bot.models.Link;
-import edu.java.bot.models.User;
-import edu.java.bot.services.UserService;
+import edu.java.bot.services.ScrapperService;
 import edu.java.bot.validators.LinkValidator;
 import java.net.URI;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class LinkCommandHandler {
+    private final static String CHAT_NOT_EXIST = "I dont recognize you";
     private final static String WAIT_FOR_LINK = "Send a link";
     private final static String LINK_PARSE_ERROR = "Cant parse this link. Try another!";
     private final static String FINAL_MESSAGE = "Ok!";
 
-    private final UserService userService;
+    private final ScrapperService scrapperService;
 
-    public LinkCommandHandler(UserService userService) {
-        this.userService = userService;
+    public LinkCommandHandler(ScrapperService userService) {
+        this.scrapperService = userService;
     }
 
-    public SendMessage handle(Message message, User user, UserState userState) {
-        if (message.text().equals(userState.getCommandName())) {
-            user.setState(userState);
-            userService.update(user);
-            return new SendMessage(user.getTelegramId(), WAIT_FOR_LINK);
+    public SendMessage handle(Message message, long chatId, ChatState chatState) {
+        try {
+            Chat chat = scrapperService.findChat(chatId);
+            if (chat == null) {
+                return new SendMessage(chatId, CHAT_NOT_EXIST);
+            }
+            if (message.text().equals(chatState.getCommandName())) {
+                chat.setState(chatState);
+                scrapperService.update(chat);
+                return new SendMessage(chat.getTelegramId(), WAIT_FOR_LINK);
+            }
+            Link link = parseLink(message.text());
+            if (link == null) {
+                return new SendMessage(chat.getTelegramId(), LINK_PARSE_ERROR);
+            }
+            if (chatState == ChatState.TRACK) {
+                scrapperService.addLink(chatId, link);
+            } else if (chatState == ChatState.UNTRACK) {
+                scrapperService.removeLink(chatId, link);
+            }
+            chat.setState(ChatState.DEFAULT);
+            scrapperService.update(chat);
+            return new SendMessage(chatId, FINAL_MESSAGE);
+        } catch (ScrapperClientException exception) {
+            return new SendMessage(chatId, exception.getMessage());
         }
-        Link link = parseLink(message.text());
-        if (link == null) {
-            return new SendMessage(user.getTelegramId(), LINK_PARSE_ERROR);
-        }
-        if (userState == UserState.TRACK) {
-            user.getLinks().add(link);
-        } else if (userState == UserState.UNTRACK) {
-            user.getLinks().remove(link);
-        }
-        user.resetState();
-        userService.update(user);
-        return new SendMessage(user.getTelegramId(), FINAL_MESSAGE);
     }
 
     private Link parseLink(String message) {

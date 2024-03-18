@@ -18,13 +18,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service("jdbcChatService")
-public class JooqChatService implements ChatService {
+public class JdbcChatService implements ChatService {
     private final ChatRepository chatRepository;
     private final LinkRepository linkRepository;
     private final ChatLinkRepository chatLinkRepository;
 
     @Autowired
-    public JooqChatService(
+    public JdbcChatService(
         @Qualifier("jdbcChatRepository") ChatRepository chatRepository,
         @Qualifier("jdbcLinkRepository") LinkRepository linkRepository,
         @Qualifier("jdbcChatLinkRepository") ChatLinkRepository chatLinkRepository
@@ -48,6 +48,21 @@ public class JooqChatService implements ChatService {
             throw new LinkNotFoundException();
         }
         return chatLinkRepository.findChatsByLink(link);
+    }
+
+    @Override
+    public Chat findById(long tgChatId) {
+        return chatRepository.findById(tgChatId);
+    }
+
+    @Override
+    public void update(long tgChatId, ChatState state) {
+        Chat chat = chatRepository.findById(tgChatId);
+        if (chat == null) {
+            throw new ChatNotFoundException();
+        }
+        chat.setStatus(state);
+        chatRepository.update(chat);
     }
 
     @Override

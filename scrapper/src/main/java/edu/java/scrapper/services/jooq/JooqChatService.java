@@ -51,6 +51,21 @@ public class JooqChatService implements ChatService {
     }
 
     @Override
+    public Chat findById(long tgChatId) {
+        return chatRepository.findById(tgChatId);
+    }
+
+    @Override
+    public void update(long tgChatId, ChatState state) {
+        Chat chat = chatRepository.findById(tgChatId);
+        if (chat == null) {
+            throw new ChatNotFoundException();
+        }
+        chat.setStatus(state);
+        chatRepository.update(chat);
+    }
+
+    @Override
     @Transactional
     public void register(long tgChatId) {
         Chat chat = chatRepository.findById(tgChatId);

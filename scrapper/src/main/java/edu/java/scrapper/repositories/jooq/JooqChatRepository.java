@@ -41,6 +41,15 @@ public class JooqChatRepository implements ChatRepository {
     }
 
     @Override
+    public void update(Chat chat) {
+        dslContext
+            .update(CHATS)
+            .set(CHATS.STATUS, chat.getStatus())
+            .where(CHATS.ID.equal(chat.getId()))
+            .execute();
+    }
+
+    @Override
     public void add(Chat chat) {
         dslContext
             .insertInto(CHATS)

@@ -31,7 +31,7 @@ public class JdbcGitHubLinkUpdater {
     public JdbcGitHubLinkUpdater(
         @Qualifier("jdbcLinkService") LinkService linkService,
         @Qualifier("jdbcGitHubRepositoryService") GitHubRepositoryService gitHubRepositoryService,
-        @Qualifier("jooqChatService") ChatService chatService,
+        @Qualifier("jdbcChatService") ChatService chatService,
         GitHubClient gitHubClient,
         BotClient botClient
     ) {

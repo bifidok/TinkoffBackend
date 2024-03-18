@@ -1,6 +1,8 @@
 package edu.java.scrapper.services.jdbc;
 
 import edu.java.scrapper.configuration.ApplicationConfig;
+import edu.java.scrapper.exceptions.GitHubClientException;
+import edu.java.scrapper.exceptions.StackOverflowClientException;
 import edu.java.scrapper.linkParser.GitHubLinkParser;
 import edu.java.scrapper.linkParser.LinkParser;
 import edu.java.scrapper.linkParser.StackOverFlowLinkParser;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class JdbcLinkUpdater implements LinkUpdater {
+    private final static String DEFAULT_ERROR_MESSAGE = "Something went wrong for link ";
     private final JdbcGitHubLinkUpdater jdbcGitHubLinkUpdater;
     private final JdbcStackOverflowLinkUpdater jdbcStackOverflowLinkUpdater;
     private final LinkService linkService;
@@ -49,9 +52,22 @@ public class JdbcLinkUpdater implements LinkUpdater {
         List<Link> links = linkService.findByCheckDateMoreThan(dateAfterWhichInspection);
         for (Link link : links) {
             switch (linkParser.check(link.getUrl())) {
-                case GitHubLink gitHub -> jdbcGitHubLinkUpdater.update(gitHub, link);
-                case StackOverflowLink sof -> jdbcStackOverflowLinkUpdater.update(sof, link);
-                default -> linkService.remove(link.getUrl());
+                case GitHubLink gitHub:
+                    try {
+                        jdbcGitHubLinkUpdater.update(gitHub, link);
+                    } catch (GitHubClientException exception) {
+                        log.warn(DEFAULT_ERROR_MESSAGE + link.getUrl());
+                    }
+                    break;
+                case StackOverflowLink sof:
+                    try {
+                        jdbcStackOverflowLinkUpdater.update(sof, link);
+                    } catch (StackOverflowClientException exception) {
+                        log.warn(DEFAULT_ERROR_MESSAGE + link.getUrl());
+                    }
+                    break;
+                default:
+                    linkService.remove(link.getUrl());
             }
         }
     }

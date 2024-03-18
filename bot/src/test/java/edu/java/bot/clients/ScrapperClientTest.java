@@ -4,9 +4,12 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import edu.java.bot.BotApplication;
 import edu.java.bot.dto.AddLinkRequest;
+import edu.java.bot.dto.ChatResponse;
+import edu.java.bot.dto.ChatUpdateRequest;
 import edu.java.bot.dto.ListLinksResponse;
 import edu.java.bot.dto.RemoveLinkRequest;
 import java.net.URI;
+import edu.java.bot.enums.ChatState;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -42,7 +45,31 @@ public class ScrapperClientTest {
         wireMockServer.stubFor(
             WireMock.post(urlEqualTo("/tg-chat/" + DEFAULT_CHAT_ID))
                 .willReturn(ok().withStatus(200)));
-        HttpStatus status = scrapperClient.register(DEFAULT_CHAT_ID);
+
+        HttpStatus status = scrapperClient.registerChat(DEFAULT_CHAT_ID);
+
+        assertThat(status).isNull();
+    }
+
+    @Test
+    public void get() {
+        wireMockServer.stubFor(
+            WireMock.get(urlEqualTo("/tg-chat/" + DEFAULT_CHAT_ID))
+                .willReturn(ok().withStatus(200)));
+
+        ChatResponse chatResponse = scrapperClient.getChat(DEFAULT_CHAT_ID);
+
+        assertThat(chatResponse).isNull();
+    }
+
+    @Test
+    public void update() {
+        wireMockServer.stubFor(
+            WireMock.patch(urlEqualTo("/tg-chat"))
+                .willReturn(ok().withStatus(200)));
+
+        HttpStatus status =
+            scrapperClient.updateChat(new ChatUpdateRequest(DEFAULT_CHAT_ID, ChatState.DEFAULT));
 
         assertThat(status).isNull();
     }
@@ -52,6 +79,7 @@ public class ScrapperClientTest {
         wireMockServer.stubFor(
             WireMock.delete(urlEqualTo("/tg-chat/" + DEFAULT_CHAT_ID))
                 .willReturn(ok().withStatus(200)));
+
         HttpStatus status = scrapperClient.delete(DEFAULT_CHAT_ID);
 
         assertThat(status).isNull();
@@ -62,7 +90,8 @@ public class ScrapperClientTest {
         wireMockServer.stubFor(
             WireMock.get(urlEqualTo("/links"))
                 .willReturn(ok().withStatus(200)));
-        ListLinksResponse response = scrapperClient.getAll(DEFAULT_CHAT_ID);
+
+        ListLinksResponse response = scrapperClient.getAllLinks(DEFAULT_CHAT_ID);
 
         assertThat(response).isNull();
     }
@@ -72,6 +101,7 @@ public class ScrapperClientTest {
         wireMockServer.stubFor(
             WireMock.post(urlEqualTo("/links"))
                 .willReturn(ok().withStatus(200)));
+
         HttpStatus status =
             scrapperClient.addLink(DEFAULT_CHAT_ID, new AddLinkRequest(URI.create("http://localhost")));
 
@@ -83,6 +113,7 @@ public class ScrapperClientTest {
         wireMockServer.stubFor(
             WireMock.delete(urlEqualTo("/links"))
                 .willReturn(ok().withStatus(200)));
+
         HttpStatus status =
             scrapperClient.removeLink(DEFAULT_CHAT_ID, new RemoveLinkRequest(URI.create("http://localhost")));
 

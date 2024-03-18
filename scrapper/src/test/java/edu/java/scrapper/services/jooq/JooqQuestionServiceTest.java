@@ -5,7 +5,7 @@ import edu.java.scrapper.ScrapperApplication;
 import edu.java.scrapper.models.Chat;
 import edu.java.scrapper.models.Link;
 import edu.java.scrapper.models.Question;
-import edu.java.scrapper.services.jdbc.JooqChatService;
+import edu.java.scrapper.services.jdbc.JdbcChatService;
 import java.net.URI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ public class JooqQuestionServiceTest extends IntegrationTest {
     @Autowired
     private JooqLinkService jooqLinkService;
     @Autowired
-    private JooqChatService jooqChatService;
+    private JdbcChatService jooqChatService;
     private Question baseQuestion;
     private Link baseLink;
     private Chat baseChat;

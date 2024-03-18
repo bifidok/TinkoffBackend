@@ -8,6 +8,8 @@ public interface ChatRepository {
 
     Chat findById(long tgChatId);
 
+    void update(Chat chat);
+
     void add(Chat chat);
 
     void remove(Chat chat);
