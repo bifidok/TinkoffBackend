@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-@Repository("jdbcChatRepository")
+@Repository
 @Slf4j
 public class JdbcChatRepository implements ChatRepository {
     private final JdbcTemplate jdbcTemplate;

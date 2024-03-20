@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import static edu.java.scrapper.repositories.jooq.generated.Tables.REPOSITORIES;
 
-@Repository("jooqGitHubRepositoryRepository")
+@Repository
 public class JooqGitHubRepositoryRepository implements GitHubRepositoryRepository {
     private static final RecordMapper<RepositoriesRecord, GitHubRepository> RECORD_MAPPER = r -> new GitHubRepository(
         r.getId(),

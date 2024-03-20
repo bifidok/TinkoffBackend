@@ -12,23 +12,18 @@ import edu.java.scrapper.services.LinkService;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service("jdbcLinkService")
 public class JdbcLinkService implements LinkService {
 
     private final LinkRepository linkRepository;
     private final ChatRepository chatRepository;
     private final ChatLinkRepository chatLinkRepository;
 
-    @Autowired
     public JdbcLinkService(
-        @Qualifier("jdbcLinkRepository") LinkRepository linkRepository,
-        @Qualifier("jdbcChatRepository") ChatRepository chatRepository,
-        @Qualifier("jdbcChatLinkRepository") ChatLinkRepository chatLinkRepository
+        LinkRepository linkRepository,
+        ChatRepository chatRepository,
+        ChatLinkRepository chatLinkRepository
     ) {
         this.linkRepository = linkRepository;
         this.chatRepository = chatRepository;

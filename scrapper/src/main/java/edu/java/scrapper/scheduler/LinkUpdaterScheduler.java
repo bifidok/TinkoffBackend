@@ -1,6 +1,6 @@
 package edu.java.scrapper.scheduler;
 
-import edu.java.scrapper.services.LinkUpdater;
+import edu.java.scrapper.services.linkUpdaters.LinkUpdater;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;

@@ -1,5 +1,6 @@
 package edu.java.scrapper.configuration;
 
+import edu.java.scrapper.configuration.enums.AccessType;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
@@ -17,7 +18,8 @@ public record ApplicationConfig(
     String stackOverflowBaseUrl,
     @NotEmpty
     String botBaseUrl,
-    int linkCheckDelayInHours
+    int linkCheckDelayInHours,
+    AccessType databaseAccessType
 ) {
     public record Scheduler(boolean enable, @NotNull Duration interval) {
     }

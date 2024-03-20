@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import static edu.java.scrapper.repositories.jooq.generated.Tables.QUESTIONS;
 
-@Repository("jooqQuestionRepository")
+@Repository
 public class JooqQuestionRepository implements QuestionRepository {
     private static final RecordMapper<QuestionsRecord, Question> RECORD_MAPPER = r -> new Question(
         r.getId(),

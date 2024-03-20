@@ -1,5 +1,7 @@
 package edu.java.scrapper.models;
 
+import jakarta.persistence.Embeddable;
+
 public enum ChatState {
     DEFAULT(""),
 

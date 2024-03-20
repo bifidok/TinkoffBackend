@@ -1,4 +1,4 @@
-package edu.java.scrapper.services.jdbc;
+package edu.java.scrapper.services.linkUpdaters;
 
 import edu.java.scrapper.clients.BotClient;
 import edu.java.scrapper.clients.GitHubClient;
@@ -16,11 +16,10 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JdbcGitHubLinkUpdater {
+public class GitHubLinkUpdater {
     private final LinkService linkService;
     private final GitHubRepositoryService gitHubRepositoryService;
     private final ChatService chatService;
@@ -28,10 +27,10 @@ public class JdbcGitHubLinkUpdater {
     private final BotClient botClient;
 
     @Autowired
-    public JdbcGitHubLinkUpdater(
-        @Qualifier("jdbcLinkService") LinkService linkService,
-        @Qualifier("jdbcGitHubRepositoryService") GitHubRepositoryService gitHubRepositoryService,
-        @Qualifier("jdbcChatService") ChatService chatService,
+    public GitHubLinkUpdater(
+        LinkService linkService,
+        GitHubRepositoryService gitHubRepositoryService,
+        ChatService chatService,
         GitHubClient gitHubClient,
         BotClient botClient
     ) {

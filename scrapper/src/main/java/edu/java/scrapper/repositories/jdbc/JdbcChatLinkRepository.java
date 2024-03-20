@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-@Repository("jdbcChatLinkRepository")
+@Repository
 public class JdbcChatLinkRepository implements ChatLinkRepository {
     private final JdbcTemplate jdbcTemplate;
 

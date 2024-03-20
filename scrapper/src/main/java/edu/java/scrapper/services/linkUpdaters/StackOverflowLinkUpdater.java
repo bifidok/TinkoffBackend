@@ -1,4 +1,4 @@
-package edu.java.scrapper.services.jdbc;
+package edu.java.scrapper.services.linkUpdaters;
 
 import edu.java.scrapper.clients.BotClient;
 import edu.java.scrapper.clients.StackOverflowClient;
@@ -14,11 +14,10 @@ import edu.java.scrapper.services.QuestionService;
 import java.time.OffsetDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JdbcStackOverflowLinkUpdater {
+public class StackOverflowLinkUpdater {
     private final StackOverflowClient stackOverflowClient;
     private final QuestionService questionService;
     private final ChatService chatService;
@@ -26,11 +25,11 @@ public class JdbcStackOverflowLinkUpdater {
     private final BotClient botClient;
 
     @Autowired
-    public JdbcStackOverflowLinkUpdater(
+    public StackOverflowLinkUpdater(
         StackOverflowClient stackOverflowClient,
-        @Qualifier("jdbcQuestionService") QuestionService questionService,
-        @Qualifier("jdbcChatService") ChatService chatService,
-        @Qualifier("jdbcLinkService") LinkService linkService,
+        QuestionService questionService,
+        ChatService chatService,
+        LinkService linkService,
         BotClient botClient
     ) {
         this.stackOverflowClient = stackOverflowClient;

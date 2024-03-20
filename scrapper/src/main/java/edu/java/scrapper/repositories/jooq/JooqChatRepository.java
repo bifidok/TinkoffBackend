@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import static edu.java.scrapper.repositories.jooq.generated.Tables.CHATS;
 
-@Repository("jooqChatRepository")
+@Repository
 public class JooqChatRepository implements ChatRepository {
     private static final RecordMapper<ChatsRecord, Chat> RECORD_MAPPER = r -> new Chat(
         r.getId(),

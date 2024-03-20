@@ -1,4 +1,5 @@
 app:
+  database-access-type: jooq
   git-hub-base-url: http://localhost:8080/
   stack-overflow-base-url: http://localhost:8080/
   bot-base-url: http://localhost:8080/

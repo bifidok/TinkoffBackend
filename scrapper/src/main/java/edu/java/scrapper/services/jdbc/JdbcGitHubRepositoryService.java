@@ -5,18 +5,13 @@ import edu.java.scrapper.models.Link;
 import edu.java.scrapper.repositories.GitHubRepositoryRepository;
 import edu.java.scrapper.services.GitHubRepositoryService;
 import java.time.OffsetDateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service("jdbcGitHubRepositoryService")
 public class JdbcGitHubRepositoryService implements GitHubRepositoryService {
     private final GitHubRepositoryRepository gitHubRepositoryRepository;
 
-    @Autowired
     public JdbcGitHubRepositoryService(
-        @Qualifier("jdbcGitHubRepositoryRepository") GitHubRepositoryRepository gitHubRepositoryRepository
+        GitHubRepositoryRepository gitHubRepositoryRepository
     ) {
         this.gitHubRepositoryRepository = gitHubRepositoryRepository;
     }

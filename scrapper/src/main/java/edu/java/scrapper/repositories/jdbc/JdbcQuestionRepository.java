@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-@Repository("jdbcQuestionRepository")
+@Repository
 @Slf4j
 public class JdbcQuestionRepository implements QuestionRepository {
     private final JdbcTemplate jdbcTemplate;
