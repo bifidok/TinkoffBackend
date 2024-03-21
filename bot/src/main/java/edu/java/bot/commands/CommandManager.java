@@ -1,7 +1,7 @@
 package edu.java.bot.commands;
 
 import edu.java.bot.configurations.ApplicationConfig;
-import edu.java.bot.services.UserService;
+import edu.java.bot.services.ScrapperService;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CommandManager {
-    private final UserService userService;
+    private final ScrapperService userService;
     private final ApplicationConfig applicationConfig;
     private List<Command> commands;
 
     @Autowired
-    public CommandManager(UserService userService, ApplicationConfig applicationConfig) {
+    public CommandManager(ScrapperService userService, ApplicationConfig applicationConfig) {
         this.userService = userService;
         this.applicationConfig = applicationConfig;
     }
