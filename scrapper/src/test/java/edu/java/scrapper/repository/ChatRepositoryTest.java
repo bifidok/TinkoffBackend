@@ -6,7 +6,8 @@ import edu.java.scrapper.models.ChatState;
 import edu.java.scrapper.repositories.ChatRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.Assertions;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,76 +16,63 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @RequiredArgsConstructor
 public abstract class ChatRepositoryTest extends IntegrationTest {
     private final ChatRepository chatRepository;
+    private Chat baseChat;
+
+    @BeforeEach
+    public void initEach() {
+        baseChat = new Chat(123L);
+        chatRepository.add(baseChat);
+    }
 
     @Test
     @Transactional
     @Rollback
     public void findAll_shouldReturnChats() {
-        Chat chat1 = new Chat(1);
-        System.out.println(chat1.getStatus().toString());
-        Chat chat2 = new Chat(2);
-        Chat chat3 = new Chat(3);
-        List<Chat> expected = List.of(chat1, chat2, chat3);
-        chatRepository.add(chat1);
-        chatRepository.add(chat2);
-        chatRepository.add(chat3);
+        List<Chat> chats = chatRepository.findAll();
 
-        List<Chat> actual = chatRepository.findAll();
-
-        assertThat(expected).isNotNull();
-        assertThat(actual).isNotNull();
-        Assertions.assertEquals(expected, actual);
+        assertThat(chats.contains(baseChat)).isTrue();
     }
 
     @Test
     @Transactional
     @Rollback
     public void findById_shouldReturnChatById() {
-        Chat chat1 = new Chat(1);
-        chatRepository.add(chat1);
+        Chat chat = chatRepository.findById(baseChat.getId());
 
-        Chat actual = chatRepository.findById(chat1.getId());
-
-        assertThat(actual.equals(chat1)).isTrue();
+        assertThat(chat).isEqualTo(baseChat);
     }
 
     @Test
     @Transactional
     @Rollback
     public void update_shouldChangeChatState() {
-        Chat chat = new Chat(1, ChatState.TRACK);
-        chatRepository.add(chat);
-        chat = chatRepository.findById(chat.getId());
-        chat.setStatus(ChatState.UNTRACK);
-        chatRepository.update(chat);
+        baseChat.setStatus(ChatState.TRACK);
 
-        chat = chatRepository.findById(chat.getId());
+        chatRepository.update(baseChat);
+        Chat chat = chatRepository.findById(baseChat.getId());
 
-        assertThat(chat.getStatus()).isEqualTo(ChatState.UNTRACK);
+        assertThat(chat.getStatus()).isEqualTo(ChatState.TRACK);
     }
 
     @Test
     @Transactional
     @Rollback
     public void add_shouldAddChat() {
-        Chat chat = new Chat(2);
+        Chat newChat = new Chat(222);
 
-        chatRepository.add(chat);
-        List<Chat> list = chatRepository.findAll();
+        chatRepository.add(newChat);
+        Chat chat = chatRepository.findById(newChat.getId());
 
-        assertThat(list.contains(chat)).isTrue();
+        assertThat(chat).isEqualTo(newChat);
     }
 
     @Test
     @Transactional
     @Rollback
     public void remove_shouldRemoveChat() {
-        Chat chat = new Chat(2);
-        chatRepository.add(chat);
+        chatRepository.remove(baseChat);
+        Chat chat = chatRepository.findById(baseChat.getId());
 
-        chatRepository.remove(chat);
-        List<Chat> list = chatRepository.findAll();
-
-        assertThat(list.contains(chat)).isFalse();
+        assertThat(chat).isNull();
     }
 }

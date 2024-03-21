@@ -5,9 +5,8 @@ import edu.java.scrapper.repositories.ChatRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
+@SuppressWarnings("MultipleStringLiterals")
 public class JpaChatRepositoryImpl implements ChatRepository {
     @PersistenceContext
     private EntityManager entityManager;
@@ -21,12 +20,16 @@ public class JpaChatRepositoryImpl implements ChatRepository {
 
     @Override
     public Chat findById(long tgChatId) {
-        return entityManager
+        Chat chat = entityManager
             .createQuery("select c from Chat c where id = :id", Chat.class)
             .setParameter("id", tgChatId)
             .getResultStream()
             .findFirst()
             .orElse(null);
+        if (chat != null) {
+            entityManager.detach(chat);
+        }
+        return chat;
     }
 
     @Override

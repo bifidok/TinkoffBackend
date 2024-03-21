@@ -35,21 +35,25 @@ public class LinkCommandHandler {
                 scrapperService.update(chat);
                 return new SendMessage(chat.getTelegramId(), WAIT_FOR_LINK);
             }
-            Link link = parseLink(message.text());
-            if (link == null) {
-                return new SendMessage(chat.getTelegramId(), LINK_PARSE_ERROR);
-            }
-            if (chatState == ChatState.TRACK) {
-                scrapperService.addLink(chatId, link);
-            } else if (chatState == ChatState.UNTRACK) {
-                scrapperService.removeLink(chatId, link);
-            }
-            chat.setState(ChatState.DEFAULT);
-            scrapperService.update(chat);
-            return new SendMessage(chatId, FINAL_MESSAGE);
+            return processLink(message.text(), chat);
         } catch (ScrapperClientException exception) {
             return new SendMessage(chatId, exception.getMessage());
         }
+    }
+
+    private SendMessage processLink(String linkStr, Chat chat) {
+        Link link = parseLink(linkStr);
+        if (link == null) {
+            return new SendMessage(chat.getTelegramId(), LINK_PARSE_ERROR);
+        }
+        if (chat.getState() == ChatState.TRACK) {
+            scrapperService.addLink(chat.getTelegramId(), link);
+        } else if (chat.getState() == ChatState.UNTRACK) {
+            scrapperService.removeLink(chat.getTelegramId(), link);
+        }
+        chat.setState(ChatState.DEFAULT);
+        scrapperService.update(chat);
+        return new SendMessage(chat.getTelegramId(), FINAL_MESSAGE);
     }
 
     private Link parseLink(String message) {

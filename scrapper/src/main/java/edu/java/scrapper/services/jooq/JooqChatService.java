@@ -46,11 +46,13 @@ public class JooqChatService implements ChatService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Chat findById(long tgChatId) {
         return chatRepository.findById(tgChatId);
     }
 
     @Override
+    @Transactional
     public void update(long tgChatId, ChatState state) {
         Chat chat = chatRepository.findById(tgChatId);
         if (chat == null) {

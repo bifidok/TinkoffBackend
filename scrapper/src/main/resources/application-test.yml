@@ -1,5 +1,5 @@
 app:
-  database-access-type: jooq
+  database-access-type: jpa
   git-hub-base-url: http://localhost:8080/
   stack-overflow-base-url: http://localhost:8080/
   bot-base-url: http://localhost:8080/
@@ -9,6 +9,9 @@ app:
     interval: 10s
 
 spring:
+  jpa.properties.hibernate:
+    dialect: org.hibernate.dialect.PostgreSQLDialect
+    show_sql: false
   datasource:
     url: jdbc:postgresql://localhost:5433/scrapper
     username: postgres

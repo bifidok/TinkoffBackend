@@ -4,12 +4,11 @@ import edu.java.scrapper.models.Link;
 import edu.java.scrapper.repositories.LinkRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.springframework.transaction.annotation.Transactional;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-@Transactional
+@SuppressWarnings("MultipleStringLiterals")
 public class JpaLinkRepositoryImpl implements LinkRepository {
     @PersistenceContext
     private EntityManager entityManager;
@@ -42,8 +41,8 @@ public class JpaLinkRepositoryImpl implements LinkRepository {
     @Override
     public void add(Link link) {
         entityManager
-            .createNativeQuery("insert into links (url,last_activity,last_check_time) " +
-                "values (:url,:lastActivity,:lastCheckTime)")
+            .createNativeQuery("insert into links (url,last_activity,last_check_time) "
+                + "values (:url,:lastActivity,:lastCheckTime)")
             .setParameter("url", link.getUrl().toString())
             .setParameter("lastActivity", link.getLastActivity())
             .setParameter("lastCheckTime", link.getLastCheckTime())
@@ -53,9 +52,9 @@ public class JpaLinkRepositoryImpl implements LinkRepository {
     @Override
     public void update(Link link) {
         entityManager
-            .createNativeQuery("update links set last_activity = :lastActivity, last_check_time = :lastCheckTime " +
-                "where url = :url")
-            .setParameter("url", link.getUrl().toString())
+            .createNativeQuery("update links set last_activity = :lastActivity, last_check_time = :lastCheckTime "
+                + "where id = :id")
+            .setParameter("id", link.getId())
             .setParameter("lastActivity", link.getLastActivity())
             .setParameter("lastCheckTime", link.getLastCheckTime())
             .executeUpdate();

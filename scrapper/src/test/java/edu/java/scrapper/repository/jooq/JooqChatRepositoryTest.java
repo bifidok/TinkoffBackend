@@ -4,7 +4,10 @@ import edu.java.scrapper.IntegrationTest;
 import edu.java.scrapper.ScrapperApplication;
 import edu.java.scrapper.models.Chat;
 import edu.java.scrapper.models.ChatState;
+import edu.java.scrapper.repositories.ChatRepository;
 import edu.java.scrapper.repositories.jooq.JooqChatRepository;
+import edu.java.scrapper.repository.ChatRepositoryTest;
+import org.jooq.DSLContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,76 +22,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(classes = ScrapperApplication.class)
 @ActiveProfiles("test")
-public class JooqChatRepositoryTest extends IntegrationTest {
+public class JooqChatRepositoryTest extends ChatRepositoryTest {
+
     @Autowired
-    private JooqChatRepository jooqChatRepository;
-
-    @Test
-    @Transactional
-    @Rollback
-    public void findAll_shouldReturnChats() {
-        Chat chat1 = new Chat(1);
-        System.out.println(chat1.getStatus().toString());
-        Chat chat2 = new Chat(2);
-        Chat chat3 = new Chat(3);
-        List<Chat> expected = List.of(chat1,chat2,chat3);
-        jooqChatRepository.add(chat1);
-        jooqChatRepository.add(chat2);
-        jooqChatRepository.add(chat3);
-
-        List<Chat> actual = jooqChatRepository.findAll();
-
-        assertThat(expected).isNotNull();
-        assertThat(actual).isNotNull();
-        Assertions.assertEquals(expected, actual);
-    }
-    @Test
-    @Transactional
-    @Rollback
-    public void findById_shouldReturnChatById() {
-        Chat chat1 = new Chat(1);
-        jooqChatRepository.add(chat1);
-
-        Chat actual = jooqChatRepository.findById(chat1.getId());
-
-        assertThat(actual.equals(chat1)).isTrue();
-    }
-    @Test
-    @Transactional
-    @Rollback
-    public void update_shouldChangeChatState() {
-        Chat chat = new Chat(1, ChatState.TRACK);
-        jooqChatRepository.add(chat);
-        chat = jooqChatRepository.findById(chat.getId());
-        chat.setStatus(ChatState.UNTRACK);
-        jooqChatRepository.update(chat);
-
-        chat = jooqChatRepository.findById(chat.getId());
-
-        assertThat(chat.getStatus()).isEqualTo(ChatState.UNTRACK);
-    }
-    @Test
-    @Transactional
-    @Rollback
-    public void add_shouldAddChat() {
-        Chat chat = new Chat(2);
-
-        jooqChatRepository.add(chat);
-        List<Chat> list = jooqChatRepository.findAll();
-
-        assertThat(list.contains(chat)).isTrue();
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void remove_shouldRemoveChat() {
-        Chat chat = new Chat(2);
-        jooqChatRepository.add(chat);
-
-        jooqChatRepository.remove(chat);
-        List<Chat> list = jooqChatRepository.findAll();
-
-        assertThat(list.contains(chat)).isFalse();
+    public JooqChatRepositoryTest(JooqChatRepository chatRepository) {
+        super(chatRepository);
     }
 }

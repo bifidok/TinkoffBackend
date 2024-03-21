@@ -5,12 +5,12 @@ import edu.java.scrapper.models.Question;
 import edu.java.scrapper.repositories.QuestionRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
+@SuppressWarnings("MultipleStringLiterals")
 public class JpaQuestionRepositoryImpl implements QuestionRepository {
     @PersistenceContext
     private EntityManager entityManager;
+
     @Override
     public Question findByLink(Link link) {
         return entityManager
@@ -24,8 +24,8 @@ public class JpaQuestionRepositoryImpl implements QuestionRepository {
     @Override
     public void add(Question question) {
         entityManager
-            .createNativeQuery("insert into questions (id, link_id, answer_count) " +
-                "values (:id,:linkId,:answerCount)")
+            .createNativeQuery("insert into questions (id, link_id, answer_count) "
+                + "values (:id,:linkId,:answerCount)")
             .setParameter("id", question.getId())
             .setParameter("linkId", question.getLink().getId())
             .setParameter("answerCount", question.getAnswerCount())
@@ -43,8 +43,8 @@ public class JpaQuestionRepositoryImpl implements QuestionRepository {
     @Override
     public void update(Question question) {
         entityManager
-            .createNativeQuery("update questions set answer_count = :answerCount " +
-                "where id = :id")
+            .createNativeQuery("update questions set answer_count = :answerCount "
+                + "where id = :id")
             .setParameter("id", question.getId())
             .setParameter("answerCount", question.getAnswerCount())
             .executeUpdate();

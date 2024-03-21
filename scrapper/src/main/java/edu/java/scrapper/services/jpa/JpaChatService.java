@@ -1,4 +1,4 @@
-package edu.java.scrapper.services.jdbc;
+package edu.java.scrapper.services.jpa;
 
 import edu.java.scrapper.exceptions.ChatNotCreatedException;
 import edu.java.scrapper.exceptions.ChatNotFoundException;
@@ -14,14 +14,13 @@ import java.net.URI;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
-public class JdbcChatService implements ChatService {
+public class JpaChatService implements ChatService {
     private final ChatRepository chatRepository;
     private final LinkRepository linkRepository;
     private final ChatLinkRepository chatLinkRepository;
 
-    public JdbcChatService(
-        ChatRepository chatRepository,
-        LinkRepository linkRepository,
+    public JpaChatService(
+        ChatRepository chatRepository, LinkRepository linkRepository,
         ChatLinkRepository chatLinkRepository
     ) {
         this.chatRepository = chatRepository;
