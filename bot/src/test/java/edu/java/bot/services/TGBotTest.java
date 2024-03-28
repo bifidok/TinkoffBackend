@@ -1,13 +1,12 @@
 package edu.java.bot.services;
 
 import com.pengrad.telegrambot.UpdatesListener;
-import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import edu.java.bot.commands.CommandManager;
 import edu.java.bot.commands.ListCommand;
 import edu.java.bot.commands.StartCommand;
-import edu.java.bot.enums.UserState;
-import edu.java.bot.models.User;
+import edu.java.bot.enums.ChatState;
+import edu.java.bot.models.Chat;
 import edu.java.bot.utils.UpdateBuilder;
 import java.util.Collections;
 import org.junit.jupiter.api.DisplayName;
@@ -18,8 +17,6 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.stereotype.Component;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -40,7 +37,7 @@ public class TGBotTest {
     @Mock
     private CommandManager commandManager;
     @Mock
-    private UserService userService;
+    private ScrapperService scrapperService;
     @Mock
     private TelegramApi api;
     @Captor
@@ -63,8 +60,8 @@ public class TGBotTest {
     @DisplayName("Input not command results in handling previous user command")
     public void process_whenNotCommand() {
         Update update = UpdateBuilder.createUpdate("hello");
-        User user = new User(0, UserState.TRACK);
-        when(userService.findByTelegramId(anyLong())).thenReturn(user);
+        Chat user = new Chat(0, ChatState.TRACK);
+        when(scrapperService.findChat(anyLong())).thenReturn(user);
         when(commandManager.findCommandByName(anyString()))
             .thenReturn(null)
             .thenReturn(listCommand);
@@ -80,8 +77,8 @@ public class TGBotTest {
     @DisplayName("Default message")
     public void process_whenNotCommandAndNoState() {
         Update update = UpdateBuilder.createUpdate("hello");
-        User user = new User(0, UserState.DEFAULT);
-        when(userService.findByTelegramId(anyLong())).thenReturn(user);
+        Chat user = new Chat(0, ChatState.DEFAULT);
+        when(scrapperService.findChat(anyLong())).thenReturn(user);
         when(commandManager.findCommandByName(anyString()))
             .thenReturn(null)
             .thenReturn(null);
@@ -102,7 +99,7 @@ public class TGBotTest {
         int actual = tgBot.process(Collections.singletonList(update));
 
         assertThat(actual).isEqualTo(UpdatesListener.CONFIRMED_UPDATES_ALL);
-        verify(userService, never()).findByTelegramId(anyLong());
+        verify(scrapperService, never()).findChat(anyLong());
         verify(commandManager, never()).findCommandByName(anyString());
     }
 
@@ -114,7 +111,7 @@ public class TGBotTest {
         int actual = tgBot.process(Collections.singletonList(update));
 
         assertThat(actual).isEqualTo(UpdatesListener.CONFIRMED_UPDATES_ALL);
-        verify(userService, never()).findByTelegramId(anyLong());
+        verify(scrapperService, never()).findChat(anyLong());
         verify(commandManager, never()).findCommandByName(anyString());
     }
 }
