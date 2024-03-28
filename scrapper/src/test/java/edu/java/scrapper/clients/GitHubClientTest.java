@@ -3,6 +3,7 @@ package edu.java.scrapper.clients;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import edu.java.scrapper.ScrapperApplication;
@@ -12,15 +13,22 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.shaded.org.checkerframework.checker.units.qual.C;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
+import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(classes = ScrapperApplication.class)
@@ -44,7 +52,8 @@ public class GitHubClientTest {
     @Test
     public void getRepoInfo() {
         int id = 0;
-        OffsetDateTime dateTime = OffsetDateTime.MAX;
+        OffsetDateTime dateTime = OffsetDateTime.of(1, 1, 1,
+            1, 1, 1, 1, ZoneOffset.UTC);
         wireMockServer.stubFor(
             WireMock.get(urlEqualTo("/repos/owner/repo"))
                 .willReturn(aResponse()
@@ -59,12 +68,52 @@ public class GitHubClientTest {
     }
 
     @Test
+    public void getRepoInfoWithRetry() {
+        int id = 0;
+        OffsetDateTime dateTime = OffsetDateTime.of(1, 1, 1,
+            1, 1, 1, 1, ZoneOffset.UTC);
+        RepositoryResponse expectedResponse = new RepositoryResponse(id, dateTime);
+        stubFor(
+            WireMock.get(urlEqualTo("/repos/owner/repo"))
+                .inScenario("Retry Scenario")
+                .whenScenarioStateIs(STARTED)
+                .willReturn(aResponse()
+                    .withStatus(502))
+                .willSetStateTo("502"));
+        stubFor(
+            WireMock.get(urlEqualTo("/repos/owner/repo"))
+                .inScenario("Retry Scenario")
+                .whenScenarioStateIs("502")
+                .willReturn(aResponse()
+                    .withStatus(503))
+                .willSetStateTo("503"));
+        stubFor(
+            WireMock.get(urlEqualTo("/repos/owner/repo"))
+                .inScenario("Retry Scenario")
+                .whenScenarioStateIs("503")
+                .willReturn(aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(createRepositoryResponseBody(id, dateTime))));
+
+        RepositoryResponse response = gitHubClient.getRepoInfo("owner", "repo");
+
+        assertThat(response).isEqualTo(expectedResponse);
+        wireMockServer.verify(3, getRequestedFor(urlEqualTo("/repos/owner/repo")));
+    }
+
+    @Test
     public void getRepoCommitsAfterDateTime() {
-        OffsetDateTime dateTime = OffsetDateTime.now();
+        OffsetDateTime dateTime = OffsetDateTime.of(1, 1, 1,
+            1, 1, 1, 1, ZoneOffset.UTC);
         String instantFormatDateTime = DateTimeFormatter.ISO_INSTANT.format(dateTime);
-        RepositoryCommitsResponse expected = new RepositoryCommitsResponse("1",
-            new RepositoryCommitsResponse.Commit("message",
-                new RepositoryCommitsResponse.Commit.Author("name", dateTime)));
+        RepositoryCommitsResponse expected = new RepositoryCommitsResponse(
+            "1",
+            new RepositoryCommitsResponse.Commit(
+                "message",
+                new RepositoryCommitsResponse.Commit.Author("name", dateTime)
+            )
+        );
         wireMockServer.stubFor(
             WireMock.get(urlPathMatching("/repos/owner/repo/commits"))
                 .willReturn(aResponse()

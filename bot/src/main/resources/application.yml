@@ -1,6 +1,6 @@
 app:
   scrapper-base-url: http://localhost:8080/
-  telegram-token:
+  telegram-token: token
   commands:
     start: start chat bot
     help: show available commands
@@ -8,7 +8,40 @@ app:
     untrack: remove link from tracking
     list: show list of trackable links
 
+bucket4j:
+  enabled: true
+  filters:
+    - cache-name: buckets
+      url: (/updates.*)
+      strategy: first
+      http-response-body: "{ \"status\": 429, \"error\": \"Too Many Requests\", \"message\": \"You have exhausted your API Request Quota\" }"
+      rate-limits:
+        - cache-key: "getRemoteAddr()"
+          bandwidths:
+            - capacity: 10
+              time: 10
+              unit: seconds
+              refill-speed: interval
+
+rate-limiter:
+  whitelist: ${WHITELISTED_IPS:localhost}
+
+client:
+  retry: constant
+  initial-delay: 1000
+  max-delay: 15000
+  increment: 3000
+  max-attempts: 4
+  codes: 500,502,503,504
+
 spring:
+  cache:
+    cache-names:
+      - buckets
+    caffeine:
+      spec: maximumSize=100000,expireAfterAccess=3600s
+    jcache:
+      provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
   application:
     name: bot
   jackson:

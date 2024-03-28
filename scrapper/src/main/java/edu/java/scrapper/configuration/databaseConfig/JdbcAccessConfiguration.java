@@ -1,4 +1,4 @@
-package edu.java.scrapper.configuration;
+package edu.java.scrapper.configuration.databaseConfig;
 
 import edu.java.scrapper.repositories.jdbc.JdbcChatLinkRepository;
 import edu.java.scrapper.repositories.jdbc.JdbcChatRepository;
