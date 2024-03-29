@@ -30,9 +30,10 @@ bucket4j:
               time: 60
               unit: seconds
               refill-speed: interval
+          skip-condition: '@rateLimiterService.isSkipped(getRemoteAddr())'
 
 rate-limiter:
-  whitelist: ${WHITELISTED_IPS:localhost}
+  whitelist: ${WHITELISTED_IPS:localhost,127.0.0.1}
 
 spring:
   cache:
