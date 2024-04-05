@@ -13,6 +13,8 @@ public record ApplicationConfig(
     @NotEmpty
     Map<String, String> commands,
     @NotEmpty
-    String scrapperBaseUrl
+    String scrapperBaseUrl,
+    @NotEmpty
+    String scrapperTopic
 ) {
 }

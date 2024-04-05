@@ -1,4 +1,5 @@
 app:
+  scrapper-topic: messages.update
   scrapper-base-url: http://localhost:8080/
   telegram-token: token
   commands:
@@ -7,6 +8,11 @@ app:
     track: add link to tracking
     untrack:  remove link from tracking
     list: show list of trackable links
+
+kafka:
+  bootstrap-servers: 0.0.0.0:29091,0.0.0.0:29092,0.0.0.0:29093
+  group-id: messages-group
+  dlq-topic: messages.update_dlq
 
 bucket4j:
   enabled: true
