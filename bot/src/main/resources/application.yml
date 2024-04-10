@@ -1,12 +1,43 @@
 app:
+  scrapper-topic: messages.update
   scrapper-base-url: http://localhost:8080/
-  telegram-token: token
+  telegram-token:
   commands:
     start: start chat bot
     help: show available commands
     track: add link to tracking
     untrack: remove link from tracking
     list: show list of trackable links
+
+kafka:
+  bootstrap-servers: 0.0.0.0:29091,0.0.0.0:29092,0.0.0.0:29093
+  group-id: messages-group
+  dlq-topic: messages.update_dlq
+
+management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  server:
+    port: 8091
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include:
+          - health
+          - info
+          - prometheus
+      path-mapping:
+        prometheus: "metrics"
+
+client:
+  retry: constant
+  initial-delay: 1000
+  max-delay: 15000
+  increment: 3000
+  max-attempts: 4
+  codes: 500,502,503,504
 
 bucket4j:
   enabled: true
@@ -26,14 +57,6 @@ bucket4j:
 
 rate-limiter:
   whitelist: ${WHITELISTED_IPS:localhost,127.0.0.1}
-
-client:
-  retry: constant
-  initial-delay: 1000
-  max-delay: 15000
-  increment: 3000
-  max-attempts: 4
-  codes: 500,502,503,504
 
 spring:
   cache:

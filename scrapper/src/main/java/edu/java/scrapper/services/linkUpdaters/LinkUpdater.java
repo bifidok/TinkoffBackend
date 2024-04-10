@@ -70,7 +70,6 @@ public class LinkUpdater {
     }
 
     private OffsetDateTime getDateTimeMinusDelay() {
-        //TODO change to hours + change in application.yml scheduler delay
-        return OffsetDateTime.now().minusSeconds(linkInspectionDelayInHours);
+        return OffsetDateTime.now().minusHours(linkInspectionDelayInHours);
     }
 }
