@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.shaded.org.checkerframework.checker.units.qual.C;
 import reactor.core.publisher.Mono;
@@ -34,6 +35,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @SpringBootTest(classes = ScrapperApplication.class)
 @ActiveProfiles("test")
 public class GitHubClientTest {
+    private final static int SUCCESS_STATUS = HttpStatus.OK.value();
+    private final static int BAD_GATEWAY_STATUS = HttpStatus.BAD_GATEWAY.value();
+    private final static int SERVICE_UNAVAILABLE_STATUS = HttpStatus.SERVICE_UNAVAILABLE.value();
     private final static WireMockServer wireMockServer = new WireMockServer(8080);
 
     @Autowired
@@ -57,7 +61,7 @@ public class GitHubClientTest {
         wireMockServer.stubFor(
             WireMock.get(urlEqualTo("/repos/owner/repo"))
                 .willReturn(aResponse()
-                    .withStatus(200)
+                    .withStatus(SUCCESS_STATUS)
                     .withHeader("Content-Type", "application/json")
                     .withBody(createRepositoryResponseBody(id, dateTime))));
 
@@ -78,21 +82,21 @@ public class GitHubClientTest {
                 .inScenario("Retry Scenario")
                 .whenScenarioStateIs(STARTED)
                 .willReturn(aResponse()
-                    .withStatus(502))
-                .willSetStateTo("502"));
+                    .withStatus(BAD_GATEWAY_STATUS))
+                .willSetStateTo(String.valueOf(BAD_GATEWAY_STATUS)));
         stubFor(
             WireMock.get(urlEqualTo("/repos/owner/repo"))
                 .inScenario("Retry Scenario")
-                .whenScenarioStateIs("502")
+                .whenScenarioStateIs(String.valueOf(BAD_GATEWAY_STATUS))
                 .willReturn(aResponse()
-                    .withStatus(503))
-                .willSetStateTo("503"));
+                    .withStatus(SERVICE_UNAVAILABLE_STATUS))
+                .willSetStateTo(String.valueOf(SERVICE_UNAVAILABLE_STATUS)));
         stubFor(
             WireMock.get(urlEqualTo("/repos/owner/repo"))
                 .inScenario("Retry Scenario")
-                .whenScenarioStateIs("503")
+                .whenScenarioStateIs(String.valueOf(SERVICE_UNAVAILABLE_STATUS))
                 .willReturn(aResponse()
-                    .withStatus(200)
+                    .withStatus(SUCCESS_STATUS)
                     .withHeader("Content-Type", "application/json")
                     .withBody(createRepositoryResponseBody(id, dateTime))));
 
@@ -118,7 +122,7 @@ public class GitHubClientTest {
             WireMock.get(urlPathMatching("/repos/owner/repo/commits"))
                 .willReturn(aResponse()
                     .withHeader("Content-Type", "application/json")
-                    .withStatus(200)
+                    .withStatus(SUCCESS_STATUS)
                     .withBody(createRepositoryCommitsResponseBody(expected))));
 
         List<RepositoryCommitsResponse> responses =

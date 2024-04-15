@@ -22,11 +22,18 @@ public class JdbcGitHubRepositoryRepository implements GitHubRepositoryRepositor
 
     @Override
     public GitHubRepository findByLink(Link link) {
-        String query = String.format("select * from repositories where link_id = %d", link.getId());
         try {
             GitHubRepository gitHubRepository =
-                jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(GitHubRepository.class));
-            gitHubRepository.setLink(link);
+                jdbcTemplate.query(
+                        "select * from repositories where link_id = ?",
+                        new BeanPropertyRowMapper<>(GitHubRepository.class),
+                        link.getId()
+                    ).stream()
+                    .findFirst()
+                    .orElse(null);
+            if (gitHubRepository != null) {
+                gitHubRepository.setLink(link);
+            }
             return gitHubRepository;
         } catch (DataAccessException exception) {
             log.info(exception.getMessage());

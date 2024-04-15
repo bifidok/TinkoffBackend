@@ -2,7 +2,6 @@ package edu.java.bot.controllers.handlers;
 
 import edu.java.bot.dto.ApiErrorResponse;
 import edu.java.bot.exceptions.LinkUpdateNotCorrectException;
-import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +19,7 @@ public class ExceptionApiHandler {
             "Link not found",
             HttpStatus.BAD_REQUEST.toString(),
             exception.getClass().getName(),
-            exception.getMessage(),
-            Arrays.stream(exception.getStackTrace()).map(trace -> trace.toString()).toArray(String[]::new)
+            exception.getMessage()
         );
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)

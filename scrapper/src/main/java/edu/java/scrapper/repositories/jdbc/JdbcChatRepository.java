@@ -5,7 +5,6 @@ import edu.java.scrapper.repositories.ChatRepository;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -27,13 +26,13 @@ public class JdbcChatRepository implements ChatRepository {
 
     @Override
     public Chat findById(long tgChatId) {
-        String query = String.format("select * from chats where id = %d", tgChatId);
-        try {
-            return jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(Chat.class));
-        } catch (DataAccessException exception) {
-            log.info(exception.getMessage());
-        }
-        return null;
+        return jdbcTemplate.query(
+            "select * from chats where id = ?",
+            new BeanPropertyRowMapper<>(Chat.class),
+            tgChatId
+        ).stream()
+            .findFirst()
+            .orElse(null);
     }
 
     @Override
