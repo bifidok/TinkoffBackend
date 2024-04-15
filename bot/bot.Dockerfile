@@ -1,5 +1,5 @@
 FROM openjdk:21
-ARG JAR_FILE=bot/target/bot.jar
+ARG JAR_FILE=./bot/target/bot.jar
 WORKDIR /opt/app
 COPY ${JAR_FILE} bot.jar
 EXPOSE 8090
