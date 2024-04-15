@@ -13,6 +13,4 @@ public class ApiErrorResponse {
     private final String exceptionName;
     @NonNull
     private final String exceptionMessage;
-    @NonNull
-    private final String[] stackTrace;
 }

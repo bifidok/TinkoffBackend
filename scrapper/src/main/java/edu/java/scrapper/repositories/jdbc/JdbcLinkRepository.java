@@ -29,15 +29,21 @@ public class JdbcLinkRepository implements LinkRepository {
 
     @Override
     public List<Link> findByCheckDateMoreThan(OffsetDateTime dateTime) {
-        String query = String.format("select * from links where last_check_time < '%s'", dateTime.toString());
-        return jdbcTemplate.query(query, new BeanPropertyRowMapper<>(Link.class));
+        return jdbcTemplate.query(
+            "select * from links where last_check_time < ?",
+            new BeanPropertyRowMapper<>(Link.class),
+            dateTime.toString()
+        );
     }
 
     @Override
     public Link findByUrl(URI url) {
-        String query = String.format("select * from links where url = '%s'", url.toString());
         try {
-            return jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(Link.class));
+            return jdbcTemplate.queryForObject(
+                "select * from links where url = ?",
+                new BeanPropertyRowMapper<>(Link.class),
+                url.toString()
+            );
         } catch (DataAccessException exception) {
             log.info(exception.getMessage());
         }

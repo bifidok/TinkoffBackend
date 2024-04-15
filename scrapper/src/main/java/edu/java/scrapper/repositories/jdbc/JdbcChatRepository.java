@@ -27,9 +27,12 @@ public class JdbcChatRepository implements ChatRepository {
 
     @Override
     public Chat findById(long tgChatId) {
-        String query = String.format("select * from chats where id = %d", tgChatId);
         try {
-            return jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(Chat.class));
+            return jdbcTemplate.queryForObject(
+                "select * from chats where id = ?",
+                new BeanPropertyRowMapper<>(Chat.class),
+                tgChatId
+            );
         } catch (DataAccessException exception) {
             log.info(exception.getMessage());
         }
