@@ -1,0 +1,26 @@
+app:
+  git-hub-base-url: http://localhost:8080/
+  stack-overflow-base-url: http://localhost:8080/
+  bot-base-url: http://localhost:8080/
+  link-check-delay-in-hours: 2
+  scheduler:
+    enable: false
+    interval: 10s
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/scrapper
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    change-log: migrations/master.xml
+    enabled: false
+  application:
+    name: scrapper
+
+server:
+  port: 8080
+
+logging:
+  config: classpath:log4j2-plain.xml

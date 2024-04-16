@@ -11,6 +11,8 @@ public record ApplicationConfig(
     @NotEmpty
     String telegramToken,
     @NotEmpty
-    Map<String, String> commands
+    Map<String, String> commands,
+    @NotEmpty
+    String scrapperBaseUrl
 ) {
 }

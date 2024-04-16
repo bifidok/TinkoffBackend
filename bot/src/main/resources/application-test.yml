@@ -1,0 +1,25 @@
+app:
+  scrapper-base-url: http://localhost:8080/
+  telegram-token: token
+  commands:
+    start: start chat bot
+    help: show available commands
+    track: add link to tracking
+    untrack:  remove link from tracking
+    list: show list of trackable links
+
+spring:
+  application:
+    name: bot
+  jackson:
+    time-zone: UTC
+
+springdoc:
+  api-docs:
+    path: /swagger-ui
+
+server:
+  port: 8090
+
+logging:
+  config: classpath:log4j2-plain.xml
