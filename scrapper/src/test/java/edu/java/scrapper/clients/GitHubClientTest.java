@@ -26,7 +26,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @SpringBootTest(classes = ScrapperApplication.class)
 @ActiveProfiles("test")
 public class GitHubClientTest {
-    private final static WireMockServer wireMockServer = new WireMockServer(8080);
+    private final static int PORT = 8080;
+    private final static int SUCCESS_STATUS = 200;
+    private final static String DEFAULT_OWNER = "owner";
+    private final static String DEFAULT_REPO = "repo";
+    private final static WireMockServer wireMockServer = new WireMockServer(PORT);
 
     @Autowired
     private GitHubClient gitHubClient;
@@ -48,11 +52,11 @@ public class GitHubClientTest {
         wireMockServer.stubFor(
             WireMock.get(urlEqualTo("/repos/owner/repo"))
                 .willReturn(aResponse()
-                    .withStatus(200)
+                    .withStatus(SUCCESS_STATUS)
                     .withHeader("Content-Type", "application/json")
                     .withBody(createRepositoryResponseBody(id, dateTime))));
 
-        RepositoryResponse response = gitHubClient.getRepoInfo("owner", "repo");
+        RepositoryResponse response = gitHubClient.getRepoInfo(DEFAULT_OWNER, DEFAULT_REPO);
 
         assertThat(response.id()).isEqualTo(id);
         assertThat(response.lastActivity()).isEqualTo(dateTime.toString());
@@ -62,18 +66,22 @@ public class GitHubClientTest {
     public void getRepoCommitsAfterDateTime() {
         OffsetDateTime dateTime = OffsetDateTime.now();
         String instantFormatDateTime = DateTimeFormatter.ISO_INSTANT.format(dateTime);
-        RepositoryCommitsResponse expected = new RepositoryCommitsResponse("1",
-            new RepositoryCommitsResponse.Commit("message",
-                new RepositoryCommitsResponse.Commit.Author("name", dateTime)));
+        RepositoryCommitsResponse expected = new RepositoryCommitsResponse(
+            "1",
+            new RepositoryCommitsResponse.Commit(
+                "message",
+                new RepositoryCommitsResponse.Commit.Author("name", dateTime)
+            )
+        );
         wireMockServer.stubFor(
             WireMock.get(urlPathMatching("/repos/owner/repo/commits"))
                 .willReturn(aResponse()
                     .withHeader("Content-Type", "application/json")
-                    .withStatus(200)
+                    .withStatus(SUCCESS_STATUS)
                     .withBody(createRepositoryCommitsResponseBody(expected))));
 
         List<RepositoryCommitsResponse> responses =
-            gitHubClient.getRepoCommitsAfterDateTime("owner", "repo", instantFormatDateTime);
+            gitHubClient.getRepoCommitsAfterDateTime(DEFAULT_OWNER, DEFAULT_REPO, instantFormatDateTime);
         RepositoryCommitsResponse actual = responses.get(0);
 
         assertThat(responses.size() == 1).isTrue();
