@@ -6,7 +6,6 @@ import edu.java.scrapper.exceptions.ChatNotFoundException;
 import edu.java.scrapper.exceptions.LinkNotCorrectException;
 import edu.java.scrapper.exceptions.LinkNotCreatedException;
 import edu.java.scrapper.exceptions.LinkNotFoundException;
-import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +23,7 @@ public class ExceptionApiHandler {
             "Not correct id",
             HttpStatus.BAD_REQUEST.toString(),
             exception.getClass().getName(),
-            exception.getMessage(),
-            Arrays.stream(exception.getStackTrace()).map(trace -> trace.toString()).toArray(String[]::new)
+            exception.getMessage()
         );
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
@@ -39,8 +37,7 @@ public class ExceptionApiHandler {
             "Some problems with chat creation",
             HttpStatus.BAD_REQUEST.toString(),
             exception.getClass().getName(),
-            exception.getMessage(),
-            Arrays.stream(exception.getStackTrace()).map(trace -> trace.toString()).toArray(String[]::new)
+            exception.getMessage()
         );
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
@@ -54,8 +51,7 @@ public class ExceptionApiHandler {
             "Chat not found",
             HttpStatus.NOT_FOUND.toString(),
             exception.getClass().getName(),
-            exception.getMessage(),
-            Arrays.stream(exception.getStackTrace()).map(trace -> trace.toString()).toArray(String[]::new)
+            exception.getMessage()
         );
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
@@ -69,8 +65,7 @@ public class ExceptionApiHandler {
             "link not found",
             HttpStatus.NOT_FOUND.toString(),
             exception.getClass().getName(),
-            exception.getMessage(),
-            Arrays.stream(exception.getStackTrace()).map(trace -> trace.toString()).toArray(String[]::new)
+            exception.getMessage()
         );
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
@@ -84,8 +79,7 @@ public class ExceptionApiHandler {
             "link not correct",
             HttpStatus.BAD_REQUEST.toString(),
             exception.getClass().getName(),
-            exception.getMessage(),
-            Arrays.stream(exception.getStackTrace()).map(trace -> trace.toString()).toArray(String[]::new)
+            exception.getMessage()
         );
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
@@ -99,8 +93,7 @@ public class ExceptionApiHandler {
             "link already exist",
             HttpStatus.BAD_REQUEST.toString(),
             exception.getClass().getName(),
-            exception.getMessage(),
-            Arrays.stream(exception.getStackTrace()).map(trace -> trace.toString()).toArray(String[]::new)
+            exception.getMessage()
         );
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)

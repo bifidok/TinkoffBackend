@@ -6,6 +6,7 @@ import edu.java.scrapper.models.Chat;
 import edu.java.scrapper.services.ChatService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +23,7 @@ public class ChatController {
     private final ChatService chatService;
 
     @Autowired
-    public ChatController(ChatService chatService) {
+    public ChatController(@Qualifier("jdbcChatService") ChatService chatService) {
         this.chatService = chatService;
     }
 
