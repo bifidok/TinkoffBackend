@@ -4,6 +4,7 @@ import edu.java.scrapper.clients.BotClient;
 import edu.java.scrapper.clients.StackOverflowClient;
 import edu.java.scrapper.clients.responses.QuestionResponse;
 import edu.java.scrapper.dto.LinkUpdateRequest;
+import edu.java.scrapper.exceptions.StackOverflowClientException;
 import edu.java.scrapper.linkParser.links.StackOverflowLink;
 import edu.java.scrapper.models.Chat;
 import edu.java.scrapper.models.Link;
@@ -39,14 +40,20 @@ public class StackOverflowLinkUpdater {
         this.botClient = botClient;
     }
 
-    public void update(StackOverflowLink stackOverflowLink, Link link) {
-        checkByLastActivity(link, stackOverflowLink);
-        checkByAnswersInQuestion(link, stackOverflowLink);
-        link.setLastCheckTime(OffsetDateTime.now());
-        linkService.update(link);
+    public boolean update(StackOverflowLink stackOverflowLink, Link link) {
+        try {
+            checkByLastActivity(link, stackOverflowLink);
+            checkByAnswersInQuestion(link, stackOverflowLink);
+            link.setLastCheckTime(OffsetDateTime.now());
+            linkService.update(link);
+            return true;
+        } catch (StackOverflowClientException exception) {
+            return false;
+        }
     }
 
-    private void checkByLastActivity(Link link, StackOverflowLink stackOverflowLink) {
+    private void checkByLastActivity(Link link, StackOverflowLink stackOverflowLink) throws
+        StackOverflowClientException {
         QuestionResponse questionResponse = stackOverflowClient.get(stackOverflowLink.questionId());
         QuestionResponse.ItemResponse response = questionResponse.items().getFirst();
         if (link.getLastActivity().isBefore(response.lastActivity())) {
@@ -58,7 +65,8 @@ public class StackOverflowLinkUpdater {
         updateLinkDates(link, response.lastActivity());
     }
 
-    private void checkByAnswersInQuestion(Link link, StackOverflowLink stackOverflowLink) {
+    private void checkByAnswersInQuestion(Link link, StackOverflowLink stackOverflowLink)
+        throws StackOverflowClientException {
         Question question = questionService.findByLink(link);
         if (question == null) {
             Long questionId = Long.parseLong(stackOverflowLink.questionId());

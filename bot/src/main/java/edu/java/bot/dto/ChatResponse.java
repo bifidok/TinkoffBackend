@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class ChatResponse {
     @NotNull
-    private long id;
+    private Long id;
     @NotNull
     private ChatState state;
 }

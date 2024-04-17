@@ -30,12 +30,15 @@ public class LinkCommandHandler {
             if (chat == null) {
                 return new SendMessage(chatId, CHAT_NOT_EXIST);
             }
+            SendMessage commandMessage = null;
             if (message.text().equals(chatState.getCommandName())) {
                 chat.setState(chatState);
                 scrapperService.update(chat);
-                return new SendMessage(chat.getTelegramId(), WAIT_FOR_LINK);
+                commandMessage = new SendMessage(chat.getTelegramId(), WAIT_FOR_LINK);
+            } else {
+                commandMessage = processLink(message.text(), chat);
             }
-            return processLink(message.text(), chat);
+            return commandMessage;
         } catch (ScrapperClientException exception) {
             return new SendMessage(chatId, exception.getMessage());
         }

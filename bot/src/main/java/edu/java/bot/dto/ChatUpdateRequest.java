@@ -9,7 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class ChatUpdateRequest {
     @NotNull
-    private long id;
+    private Long id;
     @NotNull
     private ChatState state;
 }

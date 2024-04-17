@@ -32,7 +32,7 @@ public class JdbcLinkRepository implements LinkRepository {
         return jdbcTemplate.query(
             "select * from links where last_check_time < ?",
             new BeanPropertyRowMapper<>(Link.class),
-            dateTime.toString()
+            dateTime
         );
     }
 

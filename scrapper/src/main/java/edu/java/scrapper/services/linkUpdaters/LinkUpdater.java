@@ -1,8 +1,6 @@
 package edu.java.scrapper.services.linkUpdaters;
 
 import edu.java.scrapper.configuration.ApplicationConfig;
-import edu.java.scrapper.exceptions.GitHubClientException;
-import edu.java.scrapper.exceptions.StackOverflowClientException;
 import edu.java.scrapper.linkParser.GitHubLinkParser;
 import edu.java.scrapper.linkParser.LinkParser;
 import edu.java.scrapper.linkParser.StackOverFlowLinkParser;
@@ -50,17 +48,13 @@ public class LinkUpdater {
         for (Link link : links) {
             switch (linkParser.check(link.getUrl())) {
                 case GitHubLink gitHub:
-                    try {
-                        gitHubLinkUpdater.update(gitHub, link);
-                    } catch (GitHubClientException exception) {
-                        log.warn(DEFAULT_ERROR_MESSAGE + link.getUrl());
+                    if (!gitHubLinkUpdater.update(gitHub, link)) {
+                        log.warn(DEFAULT_ERROR_MESSAGE, link.getUrl());
                     }
                     break;
                 case StackOverflowLink sof:
-                    try {
-                        stackOverflowLinkUpdater.update(sof, link);
-                    } catch (StackOverflowClientException exception) {
-                        log.warn(DEFAULT_ERROR_MESSAGE + link.getUrl());
+                    if (!stackOverflowLinkUpdater.update(sof, link)) {
+                        log.warn(DEFAULT_ERROR_MESSAGE, link.getUrl());
                     }
                     break;
                 default:
@@ -70,6 +64,7 @@ public class LinkUpdater {
     }
 
     private OffsetDateTime getDateTimeMinusDelay() {
-        return OffsetDateTime.now().minusHours(linkInspectionDelayInHours);
+        //TODO hours
+        return OffsetDateTime.now().minusSeconds(linkInspectionDelayInHours);
     }
 }
