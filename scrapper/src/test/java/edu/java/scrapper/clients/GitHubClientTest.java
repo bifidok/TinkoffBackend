@@ -2,20 +2,24 @@ package edu.java.scrapper.clients;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import edu.java.scrapper.ScrapperApplication;
-import edu.java.scrapper.clients.responses.RepositoryCommitsResponse;
-import edu.java.scrapper.clients.responses.RepositoryResponse;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import edu.java.scrapper.ScrapperApplication;
+import edu.java.scrapper.clients.responses.RepositoryCommitsResponse;
+import edu.java.scrapper.clients.responses.RepositoryResponse;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.shaded.org.checkerframework.checker.units.qual.C;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.configureFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 

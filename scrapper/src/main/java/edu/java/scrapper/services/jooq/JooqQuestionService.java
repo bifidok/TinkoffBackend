@@ -4,17 +4,12 @@ import edu.java.scrapper.models.Link;
 import edu.java.scrapper.models.Question;
 import edu.java.scrapper.repositories.QuestionRepository;
 import edu.java.scrapper.services.QuestionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service("jooqQuestionService")
 public class JooqQuestionService implements QuestionService {
     private final QuestionRepository questionRepository;
 
-    @Autowired
-    public JooqQuestionService(@Qualifier("jooqQuestionRepository") QuestionRepository questionRepository) {
+    public JooqQuestionService(QuestionRepository questionRepository) {
         this.questionRepository = questionRepository;
     }
 

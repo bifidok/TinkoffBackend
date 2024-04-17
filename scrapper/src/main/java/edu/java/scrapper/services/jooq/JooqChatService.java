@@ -12,22 +12,17 @@ import edu.java.scrapper.repositories.LinkRepository;
 import edu.java.scrapper.services.ChatService;
 import java.net.URI;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service("jooqChatService")
 public class JooqChatService implements ChatService {
     private final ChatRepository chatRepository;
     private final LinkRepository linkRepository;
     private final ChatLinkRepository chatLinkRepository;
 
-    @Autowired
     public JooqChatService(
-        @Qualifier("jooqChatRepository") ChatRepository chatRepository,
-        @Qualifier("jooqLinkRepository") LinkRepository linkRepository,
-        @Qualifier("jooqChatLinkRepository") ChatLinkRepository chatLinkRepository
+        ChatRepository chatRepository,
+        LinkRepository linkRepository,
+        ChatLinkRepository chatLinkRepository
     ) {
         this.chatRepository = chatRepository;
         this.linkRepository = linkRepository;
@@ -48,6 +43,23 @@ public class JooqChatService implements ChatService {
             throw new LinkNotFoundException();
         }
         return chatLinkRepository.findChatsByLink(link);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Chat findById(long tgChatId) {
+        return chatRepository.findById(tgChatId);
+    }
+
+    @Override
+    @Transactional
+    public void update(long tgChatId, ChatState state) {
+        Chat chat = chatRepository.findById(tgChatId);
+        if (chat == null) {
+            throw new ChatNotFoundException();
+        }
+        chat.setStatus(state);
+        chatRepository.update(chat);
     }
 
     @Override

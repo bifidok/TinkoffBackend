@@ -11,7 +11,7 @@ import static edu.java.scrapper.repositories.jooq.generated.Tables.CHATS;
 import static edu.java.scrapper.repositories.jooq.generated.Tables.CHATS_LINKS;
 import static edu.java.scrapper.repositories.jooq.generated.Tables.LINKS;
 
-@Repository("jooqChatLinkRepository")
+@Repository
 public class JooqChatLinkRepository implements ChatLinkRepository {
     private final DSLContext dslContext;
 

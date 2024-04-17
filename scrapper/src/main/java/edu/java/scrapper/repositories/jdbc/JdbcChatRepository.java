@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-@Repository("jdbcChatRepository")
+@Repository
 @Slf4j
 public class JdbcChatRepository implements ChatRepository {
     private final JdbcTemplate jdbcTemplate;
@@ -37,6 +37,15 @@ public class JdbcChatRepository implements ChatRepository {
             log.info(exception.getMessage());
         }
         return null;
+    }
+
+    @Override
+    public void update(Chat chat) {
+        jdbcTemplate.update(
+            "update chats set status = ?::state where id = ?",
+            chat.getStatus().toString(),
+            chat.getId()
+        );
     }
 
     @Override

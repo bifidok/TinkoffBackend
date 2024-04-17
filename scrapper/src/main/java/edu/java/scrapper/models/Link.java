@@ -1,22 +1,36 @@
 package edu.java.scrapper.models;
 
+import edu.java.scrapper.models.converters.URIConverter;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.net.URI;
 import java.time.OffsetDateTime;
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
+@Entity
+@Table(name = "links")
 public class Link {
     @EqualsAndHashCode.Exclude
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+    @Column(name = "url")
+    @Convert(converter = URIConverter.class)
     private URI url;
     @EqualsAndHashCode.Exclude
+    @Column(name = "last_activity")
     private OffsetDateTime lastActivity;
     @EqualsAndHashCode.Exclude
+    @Column(name = "last_check_time")
     private OffsetDateTime lastCheckTime;
-    @EqualsAndHashCode.Exclude
-    private List<Chat> chats;
 
     public Link() {
 

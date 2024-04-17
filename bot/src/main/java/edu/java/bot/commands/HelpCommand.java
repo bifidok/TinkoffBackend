@@ -26,8 +26,8 @@ public class HelpCommand implements Command {
     }
 
     @Override
-    public SendMessage handle(Message message, long userId) {
-        return new SendMessage(userId, helpText);
+    public SendMessage handle(Message message, long chatId) {
+        return new SendMessage(chatId, helpText);
     }
 
     private String createHelpText(Map<String, String> commands) {

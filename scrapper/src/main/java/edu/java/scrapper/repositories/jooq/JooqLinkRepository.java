@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import static edu.java.scrapper.repositories.jooq.generated.tables.Links.LINKS;
 
-@Repository("jooqLinkRepository")
+@Repository
 public class JooqLinkRepository implements LinkRepository {
     private static final RecordMapper<LinksRecord, Link> RECORD_MAPPER = r -> new Link(
         r.getId(),

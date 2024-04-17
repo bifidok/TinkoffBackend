@@ -4,6 +4,7 @@ import edu.java.scrapper.clients.BotClient;
 import edu.java.scrapper.clients.GitHubClient;
 import edu.java.scrapper.clients.StackOverflowClient;
 import edu.java.scrapper.exceptions.GitHubClientException;
+import edu.java.scrapper.exceptions.StackOverflowClientException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatusCode;
@@ -30,6 +31,9 @@ public class ClientConfig {
     @Bean
     public StackOverflowClient stackOverflowClient(ApplicationConfig applicationConfig) {
         WebClient webClient = WebClient.builder()
+            .defaultStatusHandler(HttpStatusCode::isError, clientResponse ->
+                Mono.just(new StackOverflowClientException())
+            )
             .baseUrl(applicationConfig.stackOverflowBaseUrl())
             .build();
         WebClientAdapter adapter = WebClientAdapter.create(webClient);

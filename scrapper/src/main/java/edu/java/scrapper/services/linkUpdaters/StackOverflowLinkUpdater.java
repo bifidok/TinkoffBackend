@@ -1,9 +1,10 @@
-package edu.java.scrapper.services.jdbc;
+package edu.java.scrapper.services.linkUpdaters;
 
 import edu.java.scrapper.clients.BotClient;
 import edu.java.scrapper.clients.StackOverflowClient;
 import edu.java.scrapper.clients.responses.QuestionResponse;
 import edu.java.scrapper.dto.LinkUpdateRequest;
+import edu.java.scrapper.exceptions.StackOverflowClientException;
 import edu.java.scrapper.linkParser.links.StackOverflowLink;
 import edu.java.scrapper.models.Chat;
 import edu.java.scrapper.models.Link;
@@ -14,11 +15,10 @@ import edu.java.scrapper.services.QuestionService;
 import java.time.OffsetDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JdbcStackOverflowLinkUpdater {
+public class StackOverflowLinkUpdater {
     private final StackOverflowClient stackOverflowClient;
     private final QuestionService questionService;
     private final ChatService chatService;
@@ -26,11 +26,11 @@ public class JdbcStackOverflowLinkUpdater {
     private final BotClient botClient;
 
     @Autowired
-    public JdbcStackOverflowLinkUpdater(
+    public StackOverflowLinkUpdater(
         StackOverflowClient stackOverflowClient,
-        @Qualifier("jdbcQuestionService") QuestionService questionService,
-        @Qualifier("jdbcChatService") ChatService chatService,
-        @Qualifier("jdbcLinkService") LinkService linkService,
+        QuestionService questionService,
+        ChatService chatService,
+        LinkService linkService,
         BotClient botClient
     ) {
         this.stackOverflowClient = stackOverflowClient;
@@ -40,14 +40,20 @@ public class JdbcStackOverflowLinkUpdater {
         this.botClient = botClient;
     }
 
-    public void update(StackOverflowLink stackOverflowLink, Link link) {
-        checkByLastActivity(link, stackOverflowLink);
-        checkByAnswersInQuestion(link, stackOverflowLink);
-        link.setLastCheckTime(OffsetDateTime.now());
-        linkService.update(link);
+    public boolean update(StackOverflowLink stackOverflowLink, Link link) {
+        try {
+            checkByLastActivity(link, stackOverflowLink);
+            checkByAnswersInQuestion(link, stackOverflowLink);
+            link.setLastCheckTime(OffsetDateTime.now());
+            linkService.update(link);
+            return true;
+        } catch (StackOverflowClientException exception) {
+            return false;
+        }
     }
 
-    private void checkByLastActivity(Link link, StackOverflowLink stackOverflowLink) {
+    private void checkByLastActivity(Link link, StackOverflowLink stackOverflowLink) throws
+        StackOverflowClientException {
         QuestionResponse questionResponse = stackOverflowClient.get(stackOverflowLink.questionId());
         QuestionResponse.ItemResponse response = questionResponse.items().getFirst();
         if (link.getLastActivity().isBefore(response.lastActivity())) {
@@ -59,7 +65,8 @@ public class JdbcStackOverflowLinkUpdater {
         updateLinkDates(link, response.lastActivity());
     }
 
-    private void checkByAnswersInQuestion(Link link, StackOverflowLink stackOverflowLink) {
+    private void checkByAnswersInQuestion(Link link, StackOverflowLink stackOverflowLink)
+        throws StackOverflowClientException {
         Question question = questionService.findByLink(link);
         if (question == null) {
             Long questionId = Long.parseLong(stackOverflowLink.questionId());

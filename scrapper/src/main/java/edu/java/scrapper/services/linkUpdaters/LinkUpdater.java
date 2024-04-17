@@ -1,4 +1,4 @@
-package edu.java.scrapper.services.jdbc;
+package edu.java.scrapper.services.linkUpdaters;
 
 import edu.java.scrapper.configuration.ApplicationConfig;
 import edu.java.scrapper.linkParser.GitHubLinkParser;
@@ -8,32 +8,31 @@ import edu.java.scrapper.linkParser.links.GitHubLink;
 import edu.java.scrapper.linkParser.links.StackOverflowLink;
 import edu.java.scrapper.models.Link;
 import edu.java.scrapper.services.LinkService;
-import edu.java.scrapper.services.LinkUpdater;
 import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class JdbcLinkUpdater implements LinkUpdater {
-    private final JdbcGitHubLinkUpdater jdbcGitHubLinkUpdater;
-    private final JdbcStackOverflowLinkUpdater jdbcStackOverflowLinkUpdater;
+public class LinkUpdater {
+    private final static String DEFAULT_ERROR_MESSAGE = "Something went wrong for link ";
+    private final GitHubLinkUpdater gitHubLinkUpdater;
+    private final StackOverflowLinkUpdater stackOverflowLinkUpdater;
     private final LinkService linkService;
     private final LinkParser linkParser;
     private int linkInspectionDelayInHours;
 
     @Autowired
-    public JdbcLinkUpdater(
+    public LinkUpdater(
         ApplicationConfig applicationConfig,
-        @Qualifier("jdbcLinkService") LinkService linkService,
-        JdbcGitHubLinkUpdater jdbcGitHubLinkUpdater,
-        JdbcStackOverflowLinkUpdater jdbcStackOverflowLinkUpdater
+        LinkService linkService,
+        GitHubLinkUpdater jdbcGitHubLinkUpdater,
+        StackOverflowLinkUpdater jdbcStackOverflowLinkUpdater
     ) {
-        this.jdbcGitHubLinkUpdater = jdbcGitHubLinkUpdater;
-        this.jdbcStackOverflowLinkUpdater = jdbcStackOverflowLinkUpdater;
+        this.gitHubLinkUpdater = jdbcGitHubLinkUpdater;
+        this.stackOverflowLinkUpdater = jdbcStackOverflowLinkUpdater;
         this.linkService = linkService;
         linkInspectionDelayInHours = applicationConfig.linkCheckDelayInHours();
         linkParser = LinkParser.link(
@@ -42,16 +41,24 @@ public class JdbcLinkUpdater implements LinkUpdater {
         );
     }
 
-    @Override
     public void update() {
         OffsetDateTime dateAfterWhichInspection = getDateTimeMinusDelay();
         linkService.removeUnused();
         List<Link> links = linkService.findByCheckDateMoreThan(dateAfterWhichInspection);
         for (Link link : links) {
             switch (linkParser.check(link.getUrl())) {
-                case GitHubLink gitHub -> jdbcGitHubLinkUpdater.update(gitHub, link);
-                case StackOverflowLink sof -> jdbcStackOverflowLinkUpdater.update(sof, link);
-                default -> linkService.remove(link.getUrl());
+                case GitHubLink gitHub:
+                    if (!gitHubLinkUpdater.update(gitHub, link)) {
+                        log.warn(DEFAULT_ERROR_MESSAGE, link.getUrl());
+                    }
+                    break;
+                case StackOverflowLink sof:
+                    if (!stackOverflowLinkUpdater.update(sof, link)) {
+                        log.warn(DEFAULT_ERROR_MESSAGE, link.getUrl());
+                    }
+                    break;
+                default:
+                    linkService.remove(link.getUrl());
             }
         }
     }
