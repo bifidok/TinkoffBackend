@@ -24,7 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = ScrapperApplication.class)
 @ActiveProfiles("test")
 public class BotClientTest {
-    private final static WireMockServer wireMockServer = new WireMockServer(8080);
+    private final static int PORT = 8080;
+    private final static WireMockServer wireMockServer = new WireMockServer(PORT);
 
     @Autowired
     private BotClient botClient;
@@ -46,7 +47,6 @@ public class BotClientTest {
 
     @Test
     public void checkUpdate_shouldReturnCorrectValue() {
-        configureFor("localhost", 8080);
         wireMockServer.stubFor(
             WireMock.post(urlPathEqualTo("/updates"))
                 .willReturn(WireMock.ok()));

@@ -22,10 +22,13 @@ public class JdbcQuestionRepository implements QuestionRepository {
 
     @Override
     public Question findByLink(Link link) {
-        String query = String.format("select * from questions where link_id = %d", link.getId());
         try {
             Question question =
-                jdbcTemplate.queryForObject(query, new BeanPropertyRowMapper<>(Question.class));
+                jdbcTemplate.queryForObject(
+                    "select * from questions where link_id = ?",
+                    new BeanPropertyRowMapper<>(Question.class),
+                    link.getId()
+                );
             question.setLink(link);
             return question;
         } catch (DataAccessException exception) {

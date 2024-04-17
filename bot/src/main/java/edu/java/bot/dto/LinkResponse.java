@@ -8,7 +8,7 @@ import lombok.NonNull;
 @Data
 @AllArgsConstructor
 public class LinkResponse {
-    private int id;
+    private Integer id;
     @NonNull
     private URI uri;
 }

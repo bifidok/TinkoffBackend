@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LinkUpdateRequest {
-    private int id;
+    private Integer id;
     @NotNull
     private URI url;
     private String description;
