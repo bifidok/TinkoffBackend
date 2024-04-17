@@ -8,7 +8,41 @@ app:
     enable: true
     interval: 10s
 
+client:
+  retry: constant
+  initial-delay: 1000
+  max-delay: 15000
+  increment: 3000
+  max-attempts: 4
+  codes: 500,502,503,504
+
+bucket4j:
+  enabled: true
+  filters:
+    - cache-name: buckets
+      url: (/tg-chat.*)|(/links.*)
+      strategy: first
+      http-response-body: "{ \"status\": 429, \"error\": \"Too Many Requests\", \"message\": \"You have exhausted your API Request Quota\" }"
+      rate-limits:
+        - cache-key: "getRemoteAddr()"
+          bandwidths:
+            - capacity: 10
+              time: 60
+              unit: seconds
+              refill-speed: interval
+          skip-condition: '@rateLimiterService.isSkipped(getRemoteAddr())'
+
+rate-limiter:
+  whitelist: ${WHITELISTED_IPS:localhost,127.0.0.1}
+
 spring:
+  cache:
+    cache-names:
+      - buckets
+    caffeine:
+      spec: maximumSize=100000,expireAfterAccess=3600s
+    jcache:
+      provider: com.github.benmanes.caffeine.jcache.spi.CaffeineCachingProvider
   liquibase:
     change-log: migrations/master.xml
     enabled: false
