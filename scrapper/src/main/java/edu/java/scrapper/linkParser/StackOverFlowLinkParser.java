@@ -16,7 +16,7 @@ public class StackOverFlowLinkParser extends LinkParser {
         Matcher matcher = GITHUB_LINK.matcher(url.toString());
         if (matcher.matches()) {
             String linkHost = matcher.group("host");
-            if (linkHost.equals(HOST)) {
+            if (HOST.equals(linkHost)) {
                 String path = matcher.group("path");
                 String[] parts = path.split("/");
                 String id = parts[2];
