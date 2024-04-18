@@ -1,6 +1,6 @@
 package edu.java.scrapper.services.linkUpdaters;
 
-import edu.java.scrapper.clients.BotClient;
+import edu.java.scrapper.bot.BotService;
 import edu.java.scrapper.clients.GitHubClient;
 import edu.java.scrapper.clients.responses.RepositoryCommitsResponse;
 import edu.java.scrapper.clients.responses.RepositoryResponse;
@@ -25,7 +25,7 @@ public class GitHubLinkUpdater {
     private final GitHubRepositoryService gitHubRepositoryService;
     private final ChatService chatService;
     private final GitHubClient gitHubClient;
-    private final BotClient botClient;
+    private final BotService botService;
 
     @Autowired
     public GitHubLinkUpdater(
@@ -33,13 +33,13 @@ public class GitHubLinkUpdater {
         GitHubRepositoryService gitHubRepositoryService,
         ChatService chatService,
         GitHubClient gitHubClient,
-        BotClient botClient
+        BotService botService
     ) {
         this.linkService = linkService;
         this.gitHubRepositoryService = gitHubRepositoryService;
         this.chatService = chatService;
         this.gitHubClient = gitHubClient;
-        this.botClient = botClient;
+        this.botService = botService;
     }
 
     public boolean update(GitHubLink gitHubLink, Link link) {
@@ -60,7 +60,7 @@ public class GitHubLinkUpdater {
             List<Long> chatsIds = findLinkChatsIds(link);
             LinkUpdateRequest request =
                 new LinkUpdateRequest(link.getId(), link.getUrl(), "Check new updates", chatsIds);
-            botClient.checkUpdate(request);
+            botService.checkUpdate(request);
         }
         updateLastActivity(link, response);
     }
@@ -84,7 +84,7 @@ public class GitHubLinkUpdater {
                 createRepositoryCommitUpdateMessage(responses),
                 findLinkChatsIds(link)
             );
-        botClient.checkUpdate(linkUpdateRequest);
+        botService.checkUpdate(linkUpdateRequest);
         updateLastActivity(repository, responses.getFirst());
     }
 

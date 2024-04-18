@@ -64,7 +64,6 @@ public class LinkUpdater {
     }
 
     private OffsetDateTime getDateTimeMinusDelay() {
-        //TODO hours
-        return OffsetDateTime.now().minusSeconds(linkInspectionDelayInHours);
+        return OffsetDateTime.now().minusHours(linkInspectionDelayInHours);
     }
 }

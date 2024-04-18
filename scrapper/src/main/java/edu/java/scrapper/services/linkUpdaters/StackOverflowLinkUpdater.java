@@ -1,6 +1,6 @@
 package edu.java.scrapper.services.linkUpdaters;
 
-import edu.java.scrapper.clients.BotClient;
+import edu.java.scrapper.bot.BotService;
 import edu.java.scrapper.clients.StackOverflowClient;
 import edu.java.scrapper.clients.responses.QuestionResponse;
 import edu.java.scrapper.dto.LinkUpdateRequest;
@@ -23,7 +23,7 @@ public class StackOverflowLinkUpdater {
     private final QuestionService questionService;
     private final ChatService chatService;
     private final LinkService linkService;
-    private final BotClient botClient;
+    private final BotService botService;
 
     @Autowired
     public StackOverflowLinkUpdater(
@@ -31,13 +31,13 @@ public class StackOverflowLinkUpdater {
         QuestionService questionService,
         ChatService chatService,
         LinkService linkService,
-        BotClient botClient
+        BotService botService
     ) {
         this.stackOverflowClient = stackOverflowClient;
         this.questionService = questionService;
         this.chatService = chatService;
         this.linkService = linkService;
-        this.botClient = botClient;
+        this.botService = botService;
     }
 
     public boolean update(StackOverflowLink stackOverflowLink, Link link) {
@@ -60,7 +60,7 @@ public class StackOverflowLinkUpdater {
             List<Long> chatsIds = findLinkChatsIds(link);
             LinkUpdateRequest request =
                 new LinkUpdateRequest(link.getId(), link.getUrl(), "Check new updates", chatsIds);
-            botClient.checkUpdate(request);
+            botService.checkUpdate(request);
         }
         updateLinkDates(link, response.lastActivity());
     }
@@ -83,7 +83,7 @@ public class StackOverflowLinkUpdater {
                     createQuestionUpdateMessage(question, response),
                     findLinkChatsIds(link)
                 );
-            botClient.checkUpdate(linkUpdateRequest);
+            botService.checkUpdate(linkUpdateRequest);
             updateQuestionAnswers(question, response);
         }
     }

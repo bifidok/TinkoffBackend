@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -17,6 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = ScrapperApplication.class)
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
+@TestPropertySource(properties = "spring.cache.type = jcache")
 public class RateLimiterTest extends IntegrationTest {
     @Autowired
     private MockMvc mockMvc;
@@ -24,7 +28,7 @@ public class RateLimiterTest extends IntegrationTest {
     private LinkService linkService;
 
     @Test
-    public void getAll_whenEndpointIsRestrictedAfter3RequestsInAShortTime() throws Exception {
+    public void getAll_whenEndpointIsRestrictedAfter10RequestsInAShortTime() throws Exception {
         int chatId = 1;
         when(linkService.findAll()).thenReturn(List.of(new Link()));
         for (int i = 0; i < 10; i++) {

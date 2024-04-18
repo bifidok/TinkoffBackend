@@ -1,9 +1,13 @@
 app:
+  use-queue: false
+  kafka:
+    bootstrap-servers: 0.0.0.0:29091,0.0.0.0:29092,0.0.0.0:29093
+    scrapper-topic: messages.update
   database-access-type: jdbc
+  link-check-delay-in-hours: 2
   git-hub-base-url: http://localhost:8080/
   stack-overflow-base-url: http://localhost:8080/
   bot-base-url: http://localhost:8080/
-  link-check-delay-in-hours: 2
   scheduler:
     enable: false
     interval: 10s

@@ -19,8 +19,14 @@ public record ApplicationConfig(
     @NotEmpty
     String botBaseUrl,
     int linkCheckDelayInHours,
-    AccessType databaseAccessType
+    AccessType databaseAccessType,
+    boolean useQueue,
+    KafkaConfig kafka
 ) {
     public record Scheduler(boolean enable, @NotNull Duration interval) {
+    }
+
+    public record KafkaConfig(String bootstrapServers, String scrapperTopic) {
+
     }
 }
