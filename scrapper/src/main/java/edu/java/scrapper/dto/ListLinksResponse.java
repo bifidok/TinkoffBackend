@@ -10,5 +10,5 @@ import lombok.Data;
 public class ListLinksResponse {
     @NotNull
     private List<LinkResponse> links;
-    private int size;
+    private Integer size;
 }
