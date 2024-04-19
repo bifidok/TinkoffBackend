@@ -5,6 +5,7 @@ import edu.java.scrapper.clients.GitHubClient;
 import edu.java.scrapper.clients.responses.RepositoryCommitsResponse;
 import edu.java.scrapper.clients.responses.RepositoryResponse;
 import edu.java.scrapper.dto.LinkUpdateRequest;
+import edu.java.scrapper.exceptions.GitHubClientException;
 import edu.java.scrapper.linkParser.links.GitHubLink;
 import edu.java.scrapper.models.Chat;
 import edu.java.scrapper.models.GitHubRepository;
@@ -41,14 +42,19 @@ public class GitHubLinkUpdater {
         this.botService = botService;
     }
 
-    public void update(GitHubLink gitHubLink, Link link) {
-        checkByLastActivity(link, gitHubLink);
-        checkByLastCommits(link, gitHubLink);
-        link.setLastCheckTime(OffsetDateTime.now());
-        linkService.update(link);
+    public boolean update(GitHubLink gitHubLink, Link link) {
+        try {
+            checkByLastActivity(link, gitHubLink);
+            checkByLastCommits(link, gitHubLink);
+            link.setLastCheckTime(OffsetDateTime.now());
+            linkService.update(link);
+            return true;
+        } catch (GitHubClientException gitHubClientException) {
+            return false;
+        }
     }
 
-    private void checkByLastActivity(Link link, GitHubLink gitHubLink) {
+    private void checkByLastActivity(Link link, GitHubLink gitHubLink) throws GitHubClientException {
         RepositoryResponse response = gitHubClient.getRepoInfo(gitHubLink.owner(), gitHubLink.repo());
         if (link.getLastActivity().isBefore(response.lastActivity())) {
             List<Long> chatsIds = findLinkChatsIds(link);
@@ -59,7 +65,7 @@ public class GitHubLinkUpdater {
         updateLastActivity(link, response);
     }
 
-    private void checkByLastCommits(Link link, GitHubLink gitHubLink) {
+    private void checkByLastCommits(Link link, GitHubLink gitHubLink) throws GitHubClientException {
         GitHubRepository repository = gitHubRepositoryService.findByLink(link);
         if (repository == null) {
             gitHubRepositoryService.add(link);

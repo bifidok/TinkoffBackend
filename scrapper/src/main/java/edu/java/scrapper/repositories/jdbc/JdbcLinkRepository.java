@@ -7,6 +7,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -31,19 +32,22 @@ public class JdbcLinkRepository implements LinkRepository {
         return jdbcTemplate.query(
             "select * from links where last_check_time < ?",
             new BeanPropertyRowMapper<>(Link.class),
-            dateTime.toString()
+            dateTime
         );
     }
 
     @Override
     public Link findByUrl(URI url) {
-        return jdbcTemplate.query(
-            "select * from links where url = ?",
-            new BeanPropertyRowMapper<>(Link.class),
-            url.toString()
-        ).stream()
-            .findFirst()
-            .orElse(null);
+        try {
+            return jdbcTemplate.queryForObject(
+                "select * from links where url = ?",
+                new BeanPropertyRowMapper<>(Link.class),
+                url.toString()
+            );
+        } catch (DataAccessException exception) {
+            log.info(exception.getMessage());
+        }
+        return null;
     }
 
     @Override

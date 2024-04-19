@@ -35,10 +35,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @SpringBootTest(classes = ScrapperApplication.class)
 @ActiveProfiles("test")
 public class GitHubClientTest {
+    private final static int PORT = 8080;
     private final static int SUCCESS_STATUS = HttpStatus.OK.value();
     private final static int BAD_GATEWAY_STATUS = HttpStatus.BAD_GATEWAY.value();
     private final static int SERVICE_UNAVAILABLE_STATUS = HttpStatus.SERVICE_UNAVAILABLE.value();
-    private final static WireMockServer wireMockServer = new WireMockServer(8080);
+    private final static String DEFAULT_OWNER = "owner";
+    private final static String DEFAULT_REPO = "repo";
+    private final static WireMockServer wireMockServer = new WireMockServer(PORT);
 
     @Autowired
     private GitHubClient gitHubClient;
@@ -65,7 +68,7 @@ public class GitHubClientTest {
                     .withHeader("Content-Type", "application/json")
                     .withBody(createRepositoryResponseBody(id, dateTime))));
 
-        RepositoryResponse response = gitHubClient.getRepoInfo("owner", "repo");
+        RepositoryResponse response = gitHubClient.getRepoInfo(DEFAULT_OWNER, DEFAULT_REPO);
 
         assertThat(response.id()).isEqualTo(id);
         assertThat(response.lastActivity()).isEqualTo(dateTime.toString());
@@ -126,7 +129,7 @@ public class GitHubClientTest {
                     .withBody(createRepositoryCommitsResponseBody(expected))));
 
         List<RepositoryCommitsResponse> responses =
-            gitHubClient.getRepoCommitsAfterDateTime("owner", "repo", instantFormatDateTime);
+            gitHubClient.getRepoCommitsAfterDateTime(DEFAULT_OWNER, DEFAULT_REPO, instantFormatDateTime);
         RepositoryCommitsResponse actual = responses.get(0);
 
         assertThat(responses.size() == 1).isTrue();

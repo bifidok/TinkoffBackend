@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 public class CustomExchangeFilterFunction implements ExchangeFilterFunction {
     private final CustomRetry customRetry;
     private final Set<Integer> codes;
-    private int maxAttempts;
+    private final int maxAttempts;
 
     public CustomExchangeFilterFunction(int maxAttempts, CustomRetry customRetry, Set<Integer> codes) {
         this.maxAttempts = maxAttempts;

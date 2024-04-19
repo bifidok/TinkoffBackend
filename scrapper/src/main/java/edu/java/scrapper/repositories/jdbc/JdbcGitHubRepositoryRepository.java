@@ -24,13 +24,11 @@ public class JdbcGitHubRepositoryRepository implements GitHubRepositoryRepositor
     public GitHubRepository findByLink(Link link) {
         try {
             GitHubRepository gitHubRepository =
-                jdbcTemplate.query(
-                        "select * from repositories where link_id = ?",
-                        new BeanPropertyRowMapper<>(GitHubRepository.class),
-                        link.getId()
-                    ).stream()
-                    .findFirst()
-                    .orElse(null);
+                jdbcTemplate.queryForObject(
+                    "select * from repositories where link_id = ?",
+                    new BeanPropertyRowMapper<>(GitHubRepository.class),
+                    link.getId()
+                );
             if (gitHubRepository != null) {
                 gitHubRepository.setLink(link);
             }

@@ -32,7 +32,7 @@ public class ScrapperQueueConsumer {
         if (isValidMessage(message)) {
             tgBot.updateRequest(message);
         } else {
-            log.warn(message + " is not valid");
+            log.warn("Message ", message, " is not valid");
             handleDltLinkUpdateRequest(message);
         }
     }

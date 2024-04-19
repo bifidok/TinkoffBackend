@@ -24,13 +24,11 @@ public class JdbcQuestionRepository implements QuestionRepository {
     public Question findByLink(Link link) {
         try {
             Question question =
-                jdbcTemplate.query(
-                        "select * from questions where link_id = ?",
-                        new BeanPropertyRowMapper<>(Question.class),
-                        link.getId()
-                    ).stream()
-                    .findFirst()
-                    .orElse(null);
+                jdbcTemplate.queryForObject(
+                    "select * from questions where link_id = ?",
+                    new BeanPropertyRowMapper<>(Question.class),
+                    link.getId()
+                );
             if (question != null) {
                 question.setLink(link);
             }
