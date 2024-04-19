@@ -1,12 +1,33 @@
 app:
+  use-queue: false
+  kafka:
+    bootstrap-servers: 0.0.0.0:29091,0.0.0.0:29092,0.0.0.0:29093
+    scrapper-topic: messages.update
   database-access-type: jdbc
   git-hub-base-url: https://api.github.com/
   stack-overflow-base-url: https://api.stackexchange.com/2.3/
   bot-base-url: http://localhost:8090/
   link-check-delay-in-hours: 2
   scheduler:
-    enable: true
-    interval: 10s
+    enable: false
+    interval: 20s
+
+management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  server:
+    port: 8081
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include:
+          - health
+          - info
+          - prometheus
+      path-mapping:
+        prometheus: "metrics"
 
 client:
   retry: constant

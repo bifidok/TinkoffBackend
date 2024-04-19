@@ -6,6 +6,7 @@ import edu.java.bot.commands.CommandManager;
 import edu.java.bot.commands.ListCommand;
 import edu.java.bot.commands.StartCommand;
 import edu.java.bot.enums.ChatState;
+import edu.java.bot.metrics.MessagesProcessAmountMetric;
 import edu.java.bot.models.Chat;
 import edu.java.bot.utils.UpdateBuilder;
 import java.util.Collections;
@@ -40,6 +41,8 @@ public class TGBotTest {
     private ScrapperService scrapperService;
     @Mock
     private TelegramApi api;
+    @Mock
+    private MessagesProcessAmountMetric messagesProcessAmountMetric;
     @Captor
     private ArgumentCaptor<String> messageCaptor;
 

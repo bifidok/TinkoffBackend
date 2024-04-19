@@ -9,6 +9,7 @@ import com.pengrad.telegrambot.request.SetMyCommands;
 import edu.java.bot.commands.Command;
 import edu.java.bot.commands.CommandManager;
 import edu.java.bot.dto.LinkUpdateRequest;
+import edu.java.bot.metrics.MessagesProcessAmountMetric;
 import edu.java.bot.models.Chat;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
@@ -22,12 +23,16 @@ public class TGBot implements Bot {
     private final CommandManager commandManager;
     private final TelegramApi api;
     private final ScrapperService userService;
+    private final MessagesProcessAmountMetric messagesProcessAmountMetric;
 
     @Autowired
-    public TGBot(CommandManager commandManager, TelegramApi api, ScrapperService userService) {
+    public TGBot(CommandManager commandManager, TelegramApi api, ScrapperService userService,
+        MessagesProcessAmountMetric messagesProcessAmountMetric
+    ) {
         this.commandManager = commandManager;
         this.api = api;
         this.userService = userService;
+        this.messagesProcessAmountMetric = messagesProcessAmountMetric;
     }
 
     @Override
@@ -53,6 +58,7 @@ public class TGBot implements Bot {
             } else {
                 processText(update);
             }
+            messagesProcessAmountMetric.increment();
         }
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
