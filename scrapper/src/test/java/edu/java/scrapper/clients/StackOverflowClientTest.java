@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
@@ -22,6 +23,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @SpringBootTest(classes = ScrapperApplication.class)
 @ActiveProfiles("test")
 public class StackOverflowClientTest {
+    private final static int SUCCESS_STATUS = HttpStatus.OK.value();
+    private final static int BAD_GATEWAY_STATUS = HttpStatus.BAD_GATEWAY.value();
     private final static WireMockServer wireMockServer = new WireMockServer();
 
     @Autowired
@@ -49,7 +52,7 @@ public class StackOverflowClientTest {
         wireMockServer.stubFor(
             WireMock.get(urlEqualTo(String.format("/questions/%d?site=stackoverflow", id)))
                 .willReturn(aResponse()
-                    .withStatus(200)
+                    .withStatus(SUCCESS_STATUS)
                     .withHeader("Content-Type", "application/json")
                     .withBody(createBody(id, dateTime))));
 
@@ -69,14 +72,14 @@ public class StackOverflowClientTest {
                 .inScenario("Retry Scenario")
                 .whenScenarioStateIs(STARTED)
                 .willReturn(aResponse()
-                    .withStatus(502))
-                .willSetStateTo("502"));
+                    .withStatus(BAD_GATEWAY_STATUS))
+                .willSetStateTo(String.valueOf(BAD_GATEWAY_STATUS)));
         wireMockServer.stubFor(
             WireMock.get(urlEqualTo(String.format("/questions/%d?site=stackoverflow", id)))
                 .inScenario("Retry Scenario")
-                .whenScenarioStateIs("502")
+                .whenScenarioStateIs(String.valueOf(BAD_GATEWAY_STATUS))
                 .willReturn(aResponse()
-                    .withStatus(200)
+                    .withStatus(SUCCESS_STATUS)
                     .withHeader("Content-Type", "application/json")
                     .withBody(createBody(id, dateTime))));
 

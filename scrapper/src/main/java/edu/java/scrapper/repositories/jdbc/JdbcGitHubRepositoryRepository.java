@@ -29,7 +29,9 @@ public class JdbcGitHubRepositoryRepository implements GitHubRepositoryRepositor
                     new BeanPropertyRowMapper<>(GitHubRepository.class),
                     link.getId()
                 );
-            gitHubRepository.setLink(link);
+            if (gitHubRepository != null) {
+                gitHubRepository.setLink(link);
+            }
             return gitHubRepository;
         } catch (DataAccessException exception) {
             log.info(exception.getMessage());

@@ -29,7 +29,9 @@ public class JdbcQuestionRepository implements QuestionRepository {
                     new BeanPropertyRowMapper<>(Question.class),
                     link.getId()
                 );
-            question.setLink(link);
+            if (question != null) {
+                question.setLink(link);
+            }
             return question;
         } catch (DataAccessException exception) {
             log.info(exception.getMessage());

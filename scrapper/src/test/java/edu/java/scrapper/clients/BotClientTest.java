@@ -24,8 +24,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = ScrapperApplication.class)
 @ActiveProfiles("test")
 public class BotClientTest {
-    private final static int PORT = 8080;
-    private final static WireMockServer wireMockServer = new WireMockServer(PORT);
+    private final static int BAD_GATEWAY_STATUS = HttpStatus.BAD_GATEWAY.value();
+    private final static int DEFAULT_PORT = 8080;
+    private final static WireMockServer wireMockServer = new WireMockServer(DEFAULT_PORT);
 
     @Autowired
     private BotClient botClient;
@@ -47,6 +48,7 @@ public class BotClientTest {
 
     @Test
     public void checkUpdate_shouldReturnCorrectValue() {
+        configureFor("localhost", DEFAULT_PORT);
         wireMockServer.stubFor(
             WireMock.post(urlPathEqualTo("/updates"))
                 .willReturn(WireMock.ok()));
@@ -64,18 +66,18 @@ public class BotClientTest {
 
     @Test
     public void checkUpdateWithRetry() {
-        configureFor("localhost", 8080);
+        configureFor("localhost", DEFAULT_PORT);
         wireMockServer.stubFor(
             WireMock.post(urlPathEqualTo("/updates"))
                 .inScenario("Retry Scenario")
                 .whenScenarioStateIs(STARTED)
                 .willReturn(aResponse()
-                    .withStatus(502))
-                .willSetStateTo("502"));
+                    .withStatus(BAD_GATEWAY_STATUS))
+                .willSetStateTo(String.valueOf(BAD_GATEWAY_STATUS)));
         wireMockServer.stubFor(
             WireMock.post(urlPathEqualTo("/updates"))
                 .inScenario("Retry Scenario")
-                .whenScenarioStateIs("502")
+                .whenScenarioStateIs(String.valueOf(BAD_GATEWAY_STATUS))
                 .willReturn(aResponse()
                     .withStatus(HttpStatus.OK.value())));
         LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
